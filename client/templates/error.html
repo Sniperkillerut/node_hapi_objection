@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{title}</title>
+
+    <style>
+        body {
+            text-align: center;
+            background: #B0B0B0;
+            color: #222;
+        }
+        .error h1 {
+            font-size: 80px;
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="error">
+        <h1>&#x26a0;<br/>{statusCode}</h1>
+        <h2>{errName}</h2>
+    </div>
+    <div>
+        <a href="/">
+            Go TO Main Page
+        </a>
+        <br>
+        <br>
+        <p>Or Report an Issue</p>
+        <form method="GET" action="mailto:test@example.com" enctype="text/plain">
+            <div>Subject</div>
+            <input type="text" name="subject" />
+
+            <div>Name</div>
+            <input name="Name" />
+
+            <div>E-Mail</div>
+            <input name="E-Mail Address" />
+
+            <div>Message</div>
+            <textarea name="Message"></textarea>
+
+            <br/>
+            <input type="submit" value="Send" />
+
+            <input type="hidden" name="body" />
+        </form>
+
+        <script>
+           var form = document.getElementsByTagName('form')[0];
+           form.addEventListener('submit',contact,false);
+           function contact(e) {
+              // Prevent Default Form Submission
+              e.preventDefault();
+
+              var target = e.target || e.srcElement;
+              var i = 0;
+              var message = '';
+
+              // Loop Through All Input Fields
+              for(i = 0; i < target.length; ++i) {
+                 // Check to make sure it's a value. Don't need to include Buttons
+                 if(target[i].type != 'text' && target[i].type != 'textarea') {
+                        // Skip to next input since this one doesn't match our rules
+                    continue;
+                 }
+
+                 // Add Input Name and value followed by a line break
+                 message += target[i].name + ': ' + target[i].value + "\r\n";
+              }
+              // Modify the hidden body input field that is required for the mailto: scheme
+              target.elements["body"].value = message;
+
+              // Submit the form since we previously stopped it. May cause recursive loop in some browsers? Should research this.
+              this.submit();
+           }
+        </script>
+    </div>
+</body>
+</html>
