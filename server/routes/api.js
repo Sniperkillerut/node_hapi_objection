@@ -1,9 +1,9 @@
 'use strict';
-// TODO: use boom?
 
 const transaction = require('objection').transaction;
 const Person = require('../models/Person');
 const Movie = require('../models/Movie');
+const Boom = require('boom');
 
 module.exports = [
     {
@@ -129,7 +129,9 @@ module.exports = [
                 .insert(request.payload);
             })
             .then(function (pet) { reply(pet); })
-            .catch(function (error) { return reply(error.data); });
+            .catch(function (error) { 
+                return reply(error.data);
+                 });
         }
     },
     {
@@ -220,8 +222,10 @@ module.exports = [
 ];
 
 function throwNotFound() {
-    const error = new Error();
-    error.statusCode = 404;
-    error.data = {id:"Id Not Found"}
+    const data = {id:"Id Not Found"};
+    const error = Boom.notFound('{id:"Id Not Found"}', data);
+    // const error = new Error();
+    // error.statusCode = 404;
+    // error.data = {id:"Id Not Found"};
     throw error;
 }

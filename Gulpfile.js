@@ -16,8 +16,10 @@ const child = require('child_process');
 var node;
 
 gulp.task('styles', function() {
-    return gulp.src('client/res/css/**/*.css') // Gets all files ending with .scss in app/scss and children dirs
-    //.pipe(sass()) // Passes it through a gulp-sass
+    return gulp.src('client/res/css/**/*.css') 
+    // .pipe(sass()) // Passes it through a gulp-sass
+    // read why not sass:
+    // http://www.amberweinberg.com/why-im-still-against-sass-less/
     .pipe(autoprefixer('last 2 version'))
     .pipe(gulp.dest('client/static/css')) // Outputs it in the css folder
     .pipe(rename({suffix: '.min'}))
@@ -42,14 +44,12 @@ gulp.task('lint:client', function () {
     return gulp.src('client/**/*.js')
     .pipe(eslint())
     .pipe(eslint.format());
-    //.pipe(jshint.reporter(stylish));
 });
 // Lint Task
 gulp.task('lint:server', function () {
     return gulp.src(['server.js', 'server/**/*.js'])
     .pipe(eslint())
     .pipe(eslint.format());
-    //.pipe(jshint.reporter(stylish));
 });
 
 // Optimizing Images 
@@ -85,7 +85,7 @@ gulp.task('browserSync', function(){
             ws: true // enables websockets
         },
         browser: ['chrome', 'firefox'],
-        files : ['client/static/**/*','client/templates/**/*' ],
+        files : ['client/static/**/*','client/templates/**/*' ], //watch files to trigger browserSync.reload
     });
 });
 
@@ -103,10 +103,7 @@ gulp.task('watch', function() {
     // Watch font files
     gulp.watch('client/res/fonts/**/*', ['font']);
 
-    //gulp.watch('client/static/**/*').on('change', browserSync.reload);
-    //gulp.watch('client/templates/**/*').on('change', browserSync.reload);
-
-    gulp.watch(['./server.js', './server/**/*.js'], ['server', 'lint:server']);
+    gulp.watch(['./server.js', './server/**/*.js'], ['lint:server', 'server']);
 
 });
 
