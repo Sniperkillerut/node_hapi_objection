@@ -1,5 +1,5 @@
 'use strict';
-// TODO: Make errors pretty, use boom, check standar api responses
+// TODO: use boom?
 
 const transaction = require('objection').transaction;
 const Person = require('../models/Person');
@@ -20,7 +20,7 @@ module.exports = [
             .query()
             .insertAndFetch(request.payload)
             .then(function (person) { reply(person); })
-            .catch(function () { return reply('error'); });
+            .catch(function (error) { return reply(error.data); });
         }
     },
     {
@@ -37,7 +37,7 @@ module.exports = [
             .query()
             .patchAndFetchById(request.params.id, request.payload)
             .then(function (person) { reply(person); })
-            .catch(function () { return reply('error'); });
+            .catch(function (error) { return reply(error.data); });
         }
     },
     {
@@ -66,7 +66,7 @@ module.exports = [
                 builder.where('species', 'dog');
             })
             .then(function (persons) { reply(persons); })
-            .catch(function () { return reply('error'); });
+            .catch(function (error) { return reply(error.data); });
         }
     },
     {
@@ -83,7 +83,7 @@ module.exports = [
             .query()
             .deleteById(request.params.id)
             .then(function () { reply({}); })
-            .catch(function () { return reply('error'); });
+            .catch(function (error) { return reply(error.data); });
         }
     },
     {
@@ -106,7 +106,7 @@ module.exports = [
                 .insert(request.payload);
             })
             .then(function (child) { reply(child); })
-            .catch(function () { return reply('error'); });
+            .catch(function (error) { return reply(error.data); });
         }
     },
     {
@@ -129,7 +129,7 @@ module.exports = [
                 .insert(request.payload);
             })
             .then(function (pet) { reply(pet); })
-            .catch(function () { return reply('error'); });
+            .catch(function (error) { return reply(error.data); });
         }
     },
     {
@@ -149,7 +149,7 @@ module.exports = [
                 .where('species', request.query.species);
             })
             .then(function (pets) { reply(pets); })
-            .catch(function () { return reply('error'); });
+            .catch(function (error) { return reply(error.data); });
         }
     },
     {
@@ -176,7 +176,7 @@ module.exports = [
                 });
             })
             .then(function (movie) {reply(movie);})
-            .catch(function () { return reply('error'); });
+            .catch(function (error) { return reply(error.data); });
         }
     },
     {
@@ -199,7 +199,7 @@ module.exports = [
                 .relate(request.payload.id);
             })
             .then(function () { reply(request.payload); })
-            .catch(function () { return reply('error'); });
+            .catch(function (error) { return reply(error.data); });
         }
     },
     {
@@ -214,7 +214,7 @@ module.exports = [
                 return movie.$relatedQuery('actors');
             })
             .then(function (actors) { reply(actors); })
-            .catch(function () { return reply('error'); });
+            .catch(function (error) { return reply(error.data); });
         }
     },
 ];
@@ -222,5 +222,6 @@ module.exports = [
 function throwNotFound() {
     const error = new Error();
     error.statusCode = 404;
+    error.data = {id:"Id Not Found"}
     throw error;
 }
