@@ -1,35 +1,35 @@
 'use strict';
 
 const Boom = require('boom');
-const User = require('../model/User');
+const User = require('../models/User');
 //const Jwt = require('jsonwebtoken');
 const Common = require('./common');
 //const bcrypt = require('bcrypt');
 
-function verifyUniqueUser(req, res) {
+function verifyUniqueUser(request, reply) {
     // Find an entry from the database that
     // matches either the email or username
     User.findOne({ 
         $or: [ 
-            { email: req.payload.email }, 
-            { username: req.payload.username }
+            { email: request.payload.email }, 
+            { username: request.payload.username }
         ]
     }, (err, user) => {
         // Check whether the username or email
         // is already taken and error out if so
         if (user) {
-            if (user.username === req.payload.username) {
-                res(Boom.badRequest('Username taken'));
+            if (user.username === request.payload.username) {
+                reply(Boom.badRequest('Username taken'));
                 return;
             }
-            if (user.email === req.payload.email) {
-                res(Boom.badRequest('Email taken'));
+            if (user.email === request.payload.email) {
+                reply(Boom.badRequest('Email taken'));
                 return;
             }
         }
         // If everything checks out, send the payload through
         // to the route handler
-        res(req.payload);
+        reply(request.payload);
     });
 }
 

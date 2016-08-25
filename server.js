@@ -94,20 +94,20 @@ const routes = require('./server/routes/');
 server.route(routes);
 
 
-server.ext('onPreResponse', (request, reply) => {
-    if (request.response.isBoom) {
-        const err = request.response;
-        const errName = err.output.payload.error;
-        const statusCode = err.output.payload.statusCode;
+// server.ext('onPreResponse', (request, reply) => {
+//     if (request.response.isBoom) {
+//         const err = request.response;
+//         const errName = err.output.payload.error;
+//         const statusCode = err.output.payload.statusCode;
 
-        return reply.view('error', {
-            statusCode: statusCode,
-            errName: errName
-        })
-        .code(statusCode);
-    }
-    reply.continue();
-});
+//         return reply.view('error', {
+//             statusCode: statusCode,
+//             errName: errName
+//         })
+//         .code(statusCode);
+//     }
+//     reply.continue();
+// });
 
  // Start the server
 server.start((err) => {
@@ -116,3 +116,16 @@ server.start((err) => {
     }
     console.log('Server running at:', server.info.uri);
 });
+
+
+/**
+ * jwt was hard and confusing, using:
+ * https://github.com/auth0-blog/hapi-jwt-authentication
+ * https://github.com/Cron-J/JWT-Hapi-Mongoose-Mongodb-with-email-verification-and-forgot-password
+ * alas, I finaly combined them, and everything seems working fine
+ * 
+ * TODO: check return reply(boom) vs throw boom vs reply boom on server/routes/users
+ * TODO: make login with linkedin, fb, twitter, etc.
+ * TODO: add tests, AVA looks good
+ * 
+ */

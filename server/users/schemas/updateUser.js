@@ -6,11 +6,12 @@ Joi.objectId = require('joi-objectid')(Joi);
 const payloadSchema = Joi.object({
     username: Joi.string().alphanum().min(2).max(30),
     email: Joi.string().email(),
-    admin: Joi.boolean()
+    scope: Joi.string().allow('User', 'Premium', 'Admin')
 });
 
 const paramsSchema = Joi.object({
-    id: Joi.objectId().required()
+    id: Joi.string().alphanum().min(1).max(30).required()
+    //id: Joi.objectId().required()
 });
 
 module.exports = {

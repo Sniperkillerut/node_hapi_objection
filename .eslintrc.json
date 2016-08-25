@@ -25,6 +25,8 @@
             "warn",
             "always"
         ],
-        "no-console": "off"
+        "no-console": "off",
+
+        "no-warning-comments": [1, { "terms": ["todo", "fixme", "xxx"], "location": "start" }]
     }
 }

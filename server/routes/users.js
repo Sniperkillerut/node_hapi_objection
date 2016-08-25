@@ -1,17 +1,18 @@
 'use strict';
 
 const Boom = require('boom');
-const User = require('../users/model/User');//.userModel;
+const User = require('../users/models/User');
 const verifyUniqueUser = require('../users/util/userFunctions').verifyUniqueUser;
 const verifyCredentials = require('../users/util/userFunctions').verifyCredentials;
 const updateUserSchema = require('../users/schemas/updateUser');
 const authenticateUserSchema = require('../users/schemas/authenticateUser');
 const createUserSchema = require('../users/schemas/createUser');
 const checkUserSchema = require('../users/schemas/checkUser');
-const privateKey = require('../../config/auth').key.privateKey;
+const privateKey = require('../config/auth').key.privateKey;
 const Joi = require('joi');
 const Common = require('../users/util/common');
 const Jwt = require('jsonwebtoken');
+//had some errors with bcrypt on windows
 // function hashPassword(password, cb) {
 //   // Generate a salt at level 10 strength
 //   bcrypt.genSalt(10, (err, salt) => {
@@ -28,6 +29,10 @@ module.exports = [
             pre: [
               { method: verifyUniqueUser }
             ],
+            // Validate the payload against the Joi schema
+            validate: {
+                payload: createUserSchema
+            }
         },
         method: 'POST',
         path: '/api/users',
@@ -45,12 +50,12 @@ module.exports = [
             user.save((err, user) => {
                 if (!err) {
                     var tokenData = {
-                        userName: user.userName,
+                        username: user.username,
                         scope: [user.scope],
                         id: user._id
                     };
                     Common.sentMailVerificationLink(user,Jwt.sign(tokenData, privateKey,{ algorithm: 'HS256', expiresIn: '1h' }));
-                    reply('Please confirm your email id by clicking on link in email');
+                    reply({message:'Please confirm your email id by clicking on link in email'});
                 } else {
                     if (11000 === err.code || 11001 === err.code) {
                         reply(Boom.forbidden('please provide another user email'));
@@ -58,10 +63,6 @@ module.exports = [
                 }
             });
             //});
-        },
-        // Validate the payload against the Joi schema
-        validate: {
-            payload: createUserSchema
         }
     },
     {
@@ -71,6 +72,9 @@ module.exports = [
             pre: [
                 { method: verifyCredentials, assign: 'user' }
             ],
+            validate: {
+                payload: authenticateUserSchema
+            }
         },
         method: 'POST',
         path: '/api/users/authenticate',
@@ -78,45 +82,44 @@ module.exports = [
             // If the user's password is correct, we can issue a token.
             // If it was incorrect, the error will bubble up from the pre method
             var tokenData = {
-                userName: request.user.userName,
-                scope: [request.user.scope],
-                id: request.user._id
+                username: request.pre.user._doc.username,
+                scope: request.pre.user._doc.scope,
+                id: request.pre.user._doc._id
             };
             var res = {
-                username: request.user.userName,
-                scope: request.user.scope,
+                username: request.pre.user._doc.username,
+                scope: request.pre.user._doc.scope,
                 token: Jwt.sign(tokenData, privateKey,{ algorithm: 'HS256', expiresIn: '1h' } )
             };
             reply(res).code(201);
-        },
-        validate: {
-            payload: authenticateUserSchema
         }
     },
     {
-        validate: {
-            payload: {
-                userName: Joi.string().email().required(),
-                password: Joi.string().required()
-            }
+        config: {
+            validate: {
+                payload: authenticateUserSchema
+            },
         },
         method: 'POST',
         path: '/resendVerificationEmail',
         handler: function(request, reply) {
             User.findOne({
-                userName: request.payload.userName
+                $or: [ 
+                    { email: request.payload.email }, 
+                    { username: request.payload.username }
+                ]
             }, function(err, user) {
                 if (!err) {
                     if (user === null) return reply(Boom.forbidden('invalid username or password'));
                     if (request.payload.password === Common.decrypt(user.password)) {
-                        if(user.isVerified) return reply('your email address is already verified');
+                        if(user.isVerified) return reply({message:'your email address is already verified'});
                         var tokenData = {
-                            userName: user.userName,
+                            username: user.username,
                             scope: [user.scope],
                             id: user._id
                         };
                         Common.sentMailVerificationLink(user,Jwt.sign(tokenData, privateKey,{ algorithm: 'HS256', expiresIn: '1h' } ));
-                        reply('account verification link is sucessfully send to an email id');
+                        reply({message:'account verification link is sucessfully send to an email id'});
                     } else reply(Boom.forbidden('invalid username or password'));
                 } else {                
                     console.error(err);
@@ -126,21 +129,23 @@ module.exports = [
         }
     },
     {
-        validate: {
-            payload: {
-                userName: Joi.string().email().required()
-            }
+        config: {
+            validate: {
+                payload: {
+                    email: Joi.string().email().required()
+                }
+            },
         },
         method: 'POST',
         path: '/forgotPassword',
         handler: function(request, reply) {
             User.findOne({
-                userName: request.payload.userName
+                email: request.payload.email
             }, function(err, user) {
                 if (!err) {
-                    if (user === null) return reply(Boom.forbidden('invalid username'));
+                    if (user === null) return reply(Boom.forbidden('invalid email'));
                     Common.sentMailForgotPassword(user);
-                    reply('password is send to registered email id');
+                    reply({message:'password is send to registered email id'});
                 } else {
                     console.error(err);
                     return reply(Boom.badImplementation(err));
@@ -149,14 +154,14 @@ module.exports = [
         }
     },
     {
-        method: 'POST',
-        path: '/verifyEmail',
+        method: 'GET',
+        path: '/verifyEmail/{token}',
         handler: function(request, reply) {
-            Jwt.verify(request.headers.authorization.split(' ')[1], privateKey, function(err, decoded) {
+            Jwt.verify(request.params.token, privateKey, function(err, decoded) {
                 if(decoded === undefined) return reply(Boom.forbidden('invalid verification link'));
                 if(decoded.scope[0] != 'User') return reply(Boom.forbidden('invalid verification link'));
                 User.findOne({
-                    userName: decoded.userName,
+                    username: decoded.username,
                     _id: decoded.id
                 }, function(err, user){
                     if (err) {
@@ -171,21 +176,25 @@ module.exports = [
                             console.error(err);
                             return reply(Boom.badImplementation(err));
                         }
-                        return reply('account sucessfully verified');
+                        return reply({message:'account sucessfully verified'});
                     });
                 });
             });
         }
     },
     {
-        validate: {
-            payload: updateUserSchema.payloadSchema,
-            params: updateUserSchema.paramsSchema
-        },
         config: {
             pre: [
                 { method: verifyUniqueUser, assign: 'user' }
             ],
+            validate: {
+                payload: updateUserSchema.payloadSchema,
+                params: updateUserSchema.paramsSchema
+            },
+            auth: {
+                strategy: 'jwt',
+                scope: 'Admin'
+            },
         },
         method: 'PATCH',
         path: '/api/users/{id}',
@@ -201,11 +210,7 @@ module.exports = [
                 }
                 reply({message: 'User updated!'});
             });      
-        },        
-        auth: {
-            strategy: 'jwt',
-            scope: ['admin']
-        }
+        },
     },
     {
         config: {
@@ -213,7 +218,7 @@ module.exports = [
                 // Add authentication to this route
                 // The user must have a scope of `admin`
                 strategy: 'jwt',
-                scope: ['admin']
+                scope: 'Admin'
             }
         },
         method: 'GET',
@@ -228,22 +233,24 @@ module.exports = [
                     throw Boom.badRequest(err);
                 }
                 if (!users.length) {
-                    throw Boom.notFound('No users found!');
+                    //throw Boom.notFound('No users found!');
+                    reply({message:'User not found!'});
+                    return;
                 }
                 reply(users);
             });
         },
     },
-    {
-        // Validate the payload against the Joi schema
-        validate: {
-            payload: checkUserSchema
-        },
+    {   
         config: {
             auth: false,
             pre: [
                 { method: verifyUniqueUser, assign: 'user' }
-            ]
+            ],
+            validate: {
+            // Validate the payload against the Joi schema
+                payload: checkUserSchema
+            },
         },
         method: 'POST',
         path: '/api/users/check',

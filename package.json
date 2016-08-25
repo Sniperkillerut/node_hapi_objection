@@ -57,6 +57,7 @@
     "mongoose": "^4.5.10",
     "mongoose-auto-increment": "^5.0.1",
     "nodemailer": "^2.5.0",
+    "nodemailer-mailgun-transport": "^1.2.1",
     "objection": "^0.5.5",
     "pg": "^6.1.0",
     "vision": "^4.1.0"
