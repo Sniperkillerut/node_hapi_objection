@@ -5,16 +5,16 @@ const Hapi = require('hapi');
 const Path = require('path');
 //const Good = require('good');
 //const Promise = require('bluebird');
+const auth = require('./server/config/auth');
 const server = new Hapi.Server({ debug: { request: ['error'] } });
 const Knex = require('knex');
-const knexConfig = require('./server/knexfile');
 const Model = require('objection').Model;
-const knex = Knex(knexConfig.development);
+const knex = Knex(auth.development);
 Model.knex(knex);
 
 server.connection({
-    port: 5000,
-    host: 'localhost'
+    port: auth.server.port,
+    host: auth.server.host
 });
 
 const options = {
@@ -60,6 +60,7 @@ const options = {
 server.register(
     [
         require('hapi-auth-cookie'),
+        require('hapi-auth-jwt'),
         require('bell'),
         require('hapi-postgres-connection'),
         require('vision'),
@@ -74,11 +75,12 @@ server.register(
     }  
 });
 
-const auth = require('./server/config/auth');
+
 //Setup the session strategy
-server.auth.strategy.apply(null, auth[0]); //coockies session
-server.auth.strategy.apply(null, auth[1]); //twitter
-server.auth.strategy.apply(null, auth[2]); //linkedin
+server.auth.strategy.apply(null, auth.session); //coockies session
+server.auth.strategy.apply(null, auth.twitter); //twitter
+server.auth.strategy.apply(null, auth.linkedin); //linkedin
+server.auth.strategy.apply(null, auth.jws); //jws
 
 server.views({
     engines: { html: require('hapi-dust') },

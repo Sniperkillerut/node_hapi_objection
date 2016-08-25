@@ -12,7 +12,7 @@
     "uglify": "echo '=> uglify' && mkdir -p client/static/js && uglifyjs client/res/js/*.js -m -o client/static/js/app.js && uglifyjs client/res/js/*.js -m -c -o client/static/js/app.min.js",
     "imagemin": "echo '=> imagemin' && mkdir -p client/static/image && imagemin client/res/image client/static/image -p",
     "icons": "echo '=> icons' && mkdir -p client/static/image && svgo -f client/res/image/icons && svg-sprite-generate -d client/res/image/icons -o client/static/image/icons.svg",
-    "bs": "echo '=> browsersync' && browser-sync start --proxy localhost:5000 --ws --files client/",
+    "bs": "echo '=> browsersync' && browser-sync start --proxy localhost:5000 --ws --files client/static --files client/templates --browser chrome --browser firefox",
     "build:css": "npm run autoprefixer && npm run minify:css",
     "build:js": "npm run lint && npm run uglify",
     "build:images": "npm run imagemin && npm run icons",
@@ -25,7 +25,9 @@
     "serve": "node server.js",
     "debug": "node-debug server.js",
     "code": "npm-run-all -p serve bs",
-    "migrate": "knex migrate:latest --knexfile server/knexfile.js"
+    "migrate:latest": "knex migrate:latest --knexfile server/config/auth.js",
+    "migrate:make": "knex migrate:make step1 --knexfile server/config/auth.js",
+    "migrate:rollback": "knex knex migrate:rollback --knexfile server/config/auth.js"
   },
   "keywords": [],
   "author": "",
@@ -48,7 +50,13 @@
     "hapi-postgres-connection": "^6.1.0",
     "inert": "^4.0.1",
     "joi": "^9.0.4",
+    "joi-objectid": "^2.0.0",
+    "jsonwebtoken": "^7.1.9",
     "knex": "^0.11.7",
+    "moment": "^2.14.1",
+    "mongoose": "^4.5.10",
+    "mongoose-auto-increment": "^5.0.1",
+    "nodemailer": "^2.5.0",
     "objection": "^0.5.5",
     "pg": "^6.1.0",
     "vision": "^4.1.0"

@@ -131,7 +131,7 @@ module.exports = [
             .then(function (pet) { reply(pet); })
             .catch(function (error) { 
                 return reply(error.data);
-                 });
+            });
         }
     },
     {
@@ -222,7 +222,7 @@ module.exports = [
 ];
 
 function throwNotFound() {
-    const data = {id:"Id Not Found"};
+    const data = {id:'Id Not Found'};
     const error = Boom.notFound('{id:"Id Not Found"}', data);
     // const error = new Error();
     // error.statusCode = 404;
