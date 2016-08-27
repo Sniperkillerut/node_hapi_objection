@@ -4,14 +4,14 @@ const Model = require('objection').Model;
 
 class Animal extends Model {
     // Table name is the only required property.
-    static get tableName() {
+    static get tableName(){
         return 'Animal';
     }
 
     // Optional JSON schema. This is not the database schema! Nothing is generated
     // based on this. This is only used for validation. Whenever a model instance
     // is created it is checked against this schema. http://json-schema.org/.
-    static get jsonSchema() {
+    static get jsonSchema(){
         return {
             type: 'object',
             required: ['name'],
@@ -26,7 +26,7 @@ class Animal extends Model {
     }
 
   // This object defines the relations to other models.
-    static get relationMappings() {
+    static get relationMappings(){
         return {
             owner: {
                 relation: Model.BelongsToOneRelation,

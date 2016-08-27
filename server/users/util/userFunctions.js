@@ -6,7 +6,7 @@ const User = require('../models/User');
 const Common = require('./common');
 //const bcrypt = require('bcrypt');
 
-function verifyUniqueUser(request, reply) {
+function verifyUniqueUser(request, reply){
     // Find an entry from the database that
     // matches either the email or username
     User.findOne({ 
@@ -17,12 +17,12 @@ function verifyUniqueUser(request, reply) {
     }, (err, user) => {
         // Check whether the username or email
         // is already taken and error out if so
-        if (user) {
-            if (user.username === request.payload.username) {
+        if (user){
+            if (user.username === request.payload.username){
                 reply(Boom.badRequest('Username taken'));
                 return;
             }
-            if (user.email === request.payload.email) {
+            if (user.email === request.payload.email){
                 reply(Boom.badRequest('Email taken'));
                 return;
             }
@@ -33,7 +33,7 @@ function verifyUniqueUser(request, reply) {
     });
 }
 
-function verifyCredentials(request, reply) {
+function verifyCredentials(request, reply){
     //const password = request.payload.password;
     // Find an entry from the database that
     // matches either the email or username
@@ -43,28 +43,28 @@ function verifyCredentials(request, reply) {
             { username: request.payload.username }
         ]
     }, (err, user) => {
-        //     if (user) {
+        //     if (user){
         //   bcrypt.compare(password, user.password, (err, isValid) => {
-        //     if (isValid) {
+        //     if (isValid){
         //       res(user);
         //     }
         //     else {
         //       res(Boom.badRequest('Incorrect password!'));
         //     }
         //   });
-        // } else {
+        // }else{
         //   res(Boom.badRequest('Incorrect username or email!'));
         // }
-        if (!err) {
+        if (!err){
             if (user === null) return reply(Boom.forbidden('invalid username or password'));
-            if (request.payload.password === Common.decrypt(user.password)) {
+            if (request.payload.password === Common.decrypt(user.password)){
                 if(!user.isVerified) return reply('Your email address is not verified. please verify your email address to proceed');
                 reply(user);
             } else reply(Boom.forbidden('invalid username or password'));
-        } else {
-            if (11000 === err.code || 11001 === err.code) {
+        }else{
+            if (11000 === err.code || 11001 === err.code){
                 reply(Boom.forbidden('please provide another user email'));
-            } else {
+            }else{
                 console.error(err);
                 return reply(Boom.badImplementation(err));
             } 

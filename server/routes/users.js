@@ -13,11 +13,11 @@ const Joi = require('joi');
 const Common = require('../users/util/common');
 const Jwt = require('jsonwebtoken');
 //had some errors with bcrypt on windows
-// function hashPassword(password, cb) {
+// function hashPassword(password, cb){
 //   // Generate a salt at level 10 strength
-//   bcrypt.genSalt(10, (err, salt) => {
-//     bcrypt.hash(password, salt, (err, hash) => {
-//       return cb(err, hash);
+//   bcrypt.genSalt(10, (error, salt) => {
+//     bcrypt.hash(password, salt, (error, hash) => {
+//       return cb(error, hash);
 //     });
 //   });
 // }
@@ -42,13 +42,14 @@ module.exports = [
             user.username = request.payload.username;
             user.scope = 'User';
             user.password = Common.encrypt(request.payload.password);
-            //hashPassword(req.payload.password, (err, hash) => {
-                // if (err) {
-                //     throw Boom.badRequest(err);
+            //hashPassword(req.payload.password, (error, hash) => {
+                // if (error){
+                //     reply( Boom.badRequest(error));
+                //     return;
                 // }
                 //user.password = hash;
-            user.save((err, user) => {
-                if (!err) {
+            user.save((error, user) => {
+                if (!error){
                     var tokenData = {
                         username: user.username,
                         scope: [user.scope],
@@ -56,10 +57,12 @@ module.exports = [
                     };
                     Common.sentMailVerificationLink(user,Jwt.sign(tokenData, privateKey,{ algorithm: 'HS256', expiresIn: '1h' }));
                     reply({message:'Please confirm your email id by clicking on link in email'});
-                } else {
-                    if (11000 === err.code || 11001 === err.code) {
+                }else{
+                    if (11000 === error.code || 11001 === error.code){
                         reply(Boom.forbidden('please provide another user email'));
-                    } else reply(Boom.forbidden(err)); // HTTP 403
+                    }else{
+                        reply(Boom.forbidden(error)); // HTTP 403
+                    }
                 }
             });
             //});
@@ -102,17 +105,23 @@ module.exports = [
         },
         method: 'POST',
         path: '/resendVerificationEmail',
-        handler: function(request, reply) {
+        handler: function(request, reply){
             User.findOne({
                 $or: [ 
                     { email: request.payload.email }, 
                     { username: request.payload.username }
                 ]
-            }, function(err, user) {
-                if (!err) {
-                    if (user === null) return reply(Boom.forbidden('invalid username or password'));
-                    if (request.payload.password === Common.decrypt(user.password)) {
-                        if(user.isVerified) return reply({message:'your email address is already verified'});
+            }, function(error, user){
+                if (!error){
+                    if (user === null){
+                        reply(Boom.forbidden('invalid username or password'));
+                        return;
+                    }
+                    if (request.payload.password === Common.decrypt(user.password)){
+                        if(user.isVerified){
+                            reply({message:'your email address is already verified'});
+                            return;
+                        }
                         var tokenData = {
                             username: user.username,
                             scope: [user.scope],
@@ -120,10 +129,13 @@ module.exports = [
                         };
                         Common.sentMailVerificationLink(user,Jwt.sign(tokenData, privateKey,{ algorithm: 'HS256', expiresIn: '1h' } ));
                         reply({message:'account verification link is sucessfully send to an email id'});
-                    } else reply(Boom.forbidden('invalid username or password'));
-                } else {                
-                    console.error(err);
-                    return reply(Boom.badImplementation(err));
+                    }else{
+                        reply(Boom.forbidden('invalid username or password'));
+                    }
+                }else{                
+                    console.error(error);
+                    reply(Boom.badImplementation(error));
+                    return;
                 }
             });
         }
@@ -138,17 +150,21 @@ module.exports = [
         },
         method: 'POST',
         path: '/forgotPassword',
-        handler: function(request, reply) {
+        handler: function(request, reply){
             User.findOne({
                 email: request.payload.email
-            }, function(err, user) {
-                if (!err) {
-                    if (user === null) return reply(Boom.forbidden('invalid email'));
+            }, function(error, user){
+                if (!error){
+                    if (user === null){
+                        reply(Boom.forbidden('invalid email'));
+                        return;
+                    }
                     Common.sentMailForgotPassword(user);
                     reply({message:'password is send to registered email id'});
-                } else {
-                    console.error(err);
-                    return reply(Boom.badImplementation(err));
+                }else{
+                    console.error(error);
+                    reply(Boom.badImplementation(error));
+                    return;
                 }
             });
         }
@@ -156,27 +172,42 @@ module.exports = [
     {
         method: 'GET',
         path: '/verifyEmail/{token}',
-        handler: function(request, reply) {
-            Jwt.verify(request.params.token, privateKey, function(err, decoded) {
-                if(decoded === undefined) return reply(Boom.forbidden('invalid verification link'));
-                if(decoded.scope[0] != 'User') return reply(Boom.forbidden('invalid verification link'));
+        handler: function(request, reply){
+            Jwt.verify(request.params.token, privateKey, function(error, decoded){
+                if(decoded === undefined){
+                    reply(Boom.forbidden('invalid verification link'));
+                    return;
+                }
+                if(decoded.scope[0] != 'User'){
+                    reply(Boom.forbidden('invalid verification link'));
+                    return;
+                }
                 User.findOne({
                     username: decoded.username,
                     _id: decoded.id
-                }, function(err, user){
-                    if (err) {
-                        console.error(err);
-                        return reply(Boom.badImplementation(err));
+                }, function(error, user){
+                    if (error){
+                        console.error(error);
+                        reply(Boom.badImplementation(error));
+                        return;
                     }
-                    if (user === null) return reply(Boom.forbidden('invalid verification link'));
-                    if (user.isVerified === true) return reply(Boom.forbidden('account is already verified'));
+                    if (user === null){
+                        reply(Boom.forbidden('invalid verification link'));
+                        return;
+                    }
+                    if (user.isVerified === true){
+                        reply(Boom.forbidden('account is already verified'));
+                        return;
+                    }
                     user.isVerified = true;
-                    user.save(function(err){
-                        if (err) {
-                            console.error(err);
-                            return reply(Boom.badImplementation(err));
+                    user.save(function(error){
+                        if (error){
+                            console.error(error);
+                            reply(Boom.badImplementation(error));
+                            return;
                         }
-                        return reply({message:'account sucessfully verified'});
+                        reply({message:'account sucessfully verified'});
+                        return;
                     });
                 });
             });
@@ -201,12 +232,14 @@ module.exports = [
         handler: (request, reply) => {
             const id = request.params.id;
             User
-            .findOneAndUpdate({ _id: id }, request.pre.user, (err, user) => {
-                if (err) {
-                    throw Boom.badRequest(err);
+            .findOneAndUpdate({ _id: id }, request.pre.user, (error, user) => {
+                if (error){
+                    reply(Boom.badRequest(error));
+                    return;
                 }
-                if (!user) {
-                    throw Boom.notFound('User not found!');
+                if (!user){
+                    reply(Boom.notFound('User id=('+request.params.id+') not found!'));
+                    return;
                 }
                 reply({message: 'User updated!'});
             });      
@@ -228,13 +261,13 @@ module.exports = [
             .find()
             // Deselect the password and version fields
             .select('-password -__v')
-            .exec((err, users) => {
-                if (err) {
-                    throw Boom.badRequest(err);
+            .exec((error, users) => {
+                if (error){
+                    reply(Boom.badRequest(error));
+                    return;
                 }
-                if (!users.length) {
-                    //throw Boom.notFound('No users found!');
-                    reply({message:'User not found!'});
+                if (!users.length){
+                    reply(Boom.notFound('No users found!'));
                     return;
                 }
                 reply(users);

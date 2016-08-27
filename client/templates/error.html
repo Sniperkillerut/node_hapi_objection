@@ -50,7 +50,7 @@
         <script>
            var form = document.getElementsByTagName('form')[0];
            form.addEventListener('submit',contact,false);
-           function contact(e) {
+           function contact(e){
               // Prevent Default Form Submission
               e.preventDefault();
 
@@ -59,9 +59,9 @@
               var message = '';
 
               // Loop Through All Input Fields
-              for(i = 0; i < target.length; ++i) {
+              for(i = 0; i < target.length; ++i){
                  // Check to make sure it's a value. Don't need to include Buttons
-                 if(target[i].type != 'text' && target[i].type != 'textarea') {
+                 if(target[i].type != 'text' && target[i].type != 'textarea'){
                         // Skip to next input since this one doesn't match our rules
                     continue;
                  }
