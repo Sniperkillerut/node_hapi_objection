@@ -1,7 +1,7 @@
 'use strict';
 
 const Joi = require('joi');
-//Joi.objectId = require('joi-objectid')(Joi);
+Joi.objectId = require('joi-objectid')(Joi);
 
 const payloadSchema = Joi.object({
     username: Joi.string().alphanum().min(2).max(30),
@@ -11,8 +11,8 @@ const payloadSchema = Joi.object({
 });
 
 const paramsSchema = Joi.object({
-    id: Joi.number().integer().required()
-    //id: Joi.objectId().required()
+    //id: Joi.number().integer().required(),
+    id: Joi.objectId().required()
 });
 
 module.exports = {

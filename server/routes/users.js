@@ -174,7 +174,7 @@ module.exports = [
         method: 'GET',
         path: '/verifyEmail/{token}',
         handler: function(request, reply){
-            let privateKey = require('../../config/auth').key.privateKey;
+            let privateKey = require('../config/auth').key.privateKey;
             Jwt.verify(request.params.token, privateKey, function(error, decoded){
                 decoded = decyptToken(decoded);
                 if(decoded === undefined){

@@ -2,9 +2,9 @@
 
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const autoIncrement = require('mongoose-auto-increment');
-const db = require('../../config/user-db').db;
-autoIncrement.initialize(db);
+// const autoIncrement = require('mongoose-auto-increment');
+//const db = require('../../config/user-db').db;
+// autoIncrement.initialize(db);
 
 const userModel = new Schema({
     email: {
@@ -39,9 +39,9 @@ const userModel = new Schema({
     }
 });
 
-userModel.plugin(autoIncrement.plugin, {
-    model: 'user',
-    field: '_id'
-});
+// userModel.plugin(autoIncrement.plugin, {
+//     model: 'user',
+//     field: '_id'
+// });
 
 module.exports = mongoose.model('User', userModel);

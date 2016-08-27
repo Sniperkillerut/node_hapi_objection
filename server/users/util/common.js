@@ -9,7 +9,7 @@ const privateKey = auth.key.privateKey;
 
 const mgauth = {
     auth: {
-        api_key: auth.mailgun.key,
+        api_key: auth.mailgun.api_key,
         domain: auth.mailgun.domain
     }
 };
@@ -63,6 +63,7 @@ function mail(from, email, subject, mailbody){
     nodemailerMailgun.sendMail(mailOptions, function(error){
         if (error){
             console.error(error);
+            throw error;
         }
         nodemailerMailgun.close(); // shut down the connection pool, no more messages
     });
