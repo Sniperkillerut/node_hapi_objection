@@ -60,7 +60,6 @@ function mail(from, email, subject, mailbody){
         //text: result.price, // plaintext body
         html: mailbody  // html body
     };
-
     nodemailerMailgun.sendMail(mailOptions, function(error){
         if (error){
             console.error(error);

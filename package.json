@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo 'Error: no test specified' && exit 1",
     "clean": "echo '=> cleaning' && rm -f client/static/{css/*,js/*,images/*}",
-    "lint": "echo '=> linting' && eslint **.js",
+    "lint": "echo '=> linting' && eslint **/*.js",
     "autoprefixer": "echo '=> autoprefixer' && mkdir -p /client/static/css",
     "minify:css": "echo '=> minify:css' && mkdir -p client/static/css && cleancss client/static/css/styles.css -o client/static/css/styles.min.css",
     "uglify": "echo '=> uglify' && mkdir -p client/static/js && uglifyjs client/res/js/*.js -m -o client/static/js/app.js && uglifyjs client/res/js/*.js -m -c -o client/static/js/app.min.js",

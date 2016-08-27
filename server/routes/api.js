@@ -106,7 +106,7 @@ module.exports = [
             },
             validate: {
                 params: {
-                    id:  Joi.number().integer().required()
+                    id: Joi.number().integer().required()
                 }
             },
         },

@@ -17,14 +17,12 @@ class Person extends Model {
         return {
             type: 'object',
             required: ['firstName', 'lastName'],
-
             properties: {
                 id: {type: 'integer'},
                 parentId: {type: ['integer', 'null']},
                 firstName: {type: 'string', minLength: 1, maxLength: 255},
                 lastName: {type: 'string', minLength: 1, maxLength: 255},
                 age: {type: 'number'},
-
                 address: {
                     type: 'object',
                     properties: {
@@ -50,7 +48,6 @@ class Person extends Model {
                     to: 'Animal.ownerId'
                 }
             },
-
             movies: {
                 relation: Model.ManyToManyRelation,
                 modelClass: Movie,
@@ -64,7 +61,6 @@ class Person extends Model {
                     to: 'Movie.id'
                 }
             },
-
             children: {
                 relation: Model.HasManyRelation,
                 modelClass: Person,

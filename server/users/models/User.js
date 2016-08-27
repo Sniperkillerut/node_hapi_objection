@@ -37,7 +37,6 @@ const userModel = new Schema({
     jwt: {
         type: String,
     }
-
 });
 
 userModel.plugin(autoIncrement.plugin, {

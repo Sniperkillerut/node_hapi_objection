@@ -85,7 +85,6 @@ server.register(
     }  
 });
 
-
 //Setup the session strategy
 server.auth.strategy.apply(null, auth.session); //coockies session
 server.auth.strategy.apply(null, auth.twitter); //twitter
@@ -103,13 +102,11 @@ server.views({
 const routes = require('./server/routes/');
 server.route(routes);
 
-
 // server.ext('onPreResponse', (request, reply) => {
 //     if (request.response.isBoom){
 //         const err = request.response;
 //         const errName = err.output.payload.error;
 //         const statusCode = err.output.payload.statusCode;
-
 //         return reply.view('error', {
 //             statusCode: statusCode,
 //             errName: errName
@@ -119,8 +116,7 @@ server.route(routes);
 //     reply.continue();
 // });
 
-
- // Start the server
+// Start the server
 server.start((err) => {
     if (err){
         throw err;
