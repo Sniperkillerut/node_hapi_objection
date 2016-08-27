@@ -33,7 +33,11 @@ const userModel = new Schema({
     isVerified: {
         type: Boolean,
         default: false
+    },
+    jwt: {
+        type: String,
     }
+
 });
 
 userModel.plugin(autoIncrement.plugin, {

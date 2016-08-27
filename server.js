@@ -140,6 +140,7 @@ server.start((err) => {
     * TODO : separate normal server and api server, with this is easy to separate error representation
     * TODO : JWT can be issued for 30 days to access the api, that means payment authentication method solved
     * TODO : add JWT token to user document in mongodb
+    * https://stormpath.com/blog/where-to-store-your-jwts-cookies-vs-html5-web-storage
     * TODO : make login with linkedin, fb, twitter, etc.
     * TODO : add tests, AVA looks good
     * TODO : add comments, lots of comments

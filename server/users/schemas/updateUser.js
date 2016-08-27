@@ -6,7 +6,8 @@ const Joi = require('joi');
 const payloadSchema = Joi.object({
     username: Joi.string().alphanum().min(2).max(30),
     email: Joi.string().email(),
-    scope: Joi.string().allow('User', 'Premium', 'Admin')
+    //scope: Joi.string().allow('User', 'Premium', 'Admin'),
+    //jwt: Joi.string()
 });
 
 const paramsSchema = Joi.object({

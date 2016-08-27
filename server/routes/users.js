@@ -4,11 +4,12 @@ const Boom = require('boom');
 const User = require('../users/models/User');
 const verifyUniqueUser = require('../users/util/userFunctions').verifyUniqueUser;
 const verifyCredentials = require('../users/util/userFunctions').verifyCredentials;
+const createToken = require('../users/util/userFunctions').createToken;
+const decyptToken = require('../users/util/userFunctions').decyptToken;
 const updateUserSchema = require('../users/schemas/updateUser');
 const authenticateUserSchema = require('../users/schemas/authenticateUser');
 const createUserSchema = require('../users/schemas/createUser');
 const checkUserSchema = require('../users/schemas/checkUser');
-const privateKey = require('../config/auth').key.privateKey;
 const Joi = require('joi');
 const Common = require('../users/util/common');
 const Jwt = require('jsonwebtoken');
@@ -55,7 +56,7 @@ module.exports = [
                         scope: [user.scope],
                         id: user._id
                     };
-                    Common.sentMailVerificationLink(user,Jwt.sign(tokenData, privateKey,{ algorithm: 'HS256', expiresIn: '1h' }));
+                    Common.sentMailVerificationLink(user,createToken(tokenData));
                     reply({message:'Please confirm your email id by clicking on link in email'});
                 }else{
                     if (11000 === error.code || 11001 === error.code){
@@ -92,7 +93,7 @@ module.exports = [
             var res = {
                 username: request.pre.user._doc.username,
                 scope: request.pre.user._doc.scope,
-                token: Jwt.sign(tokenData, privateKey,{ algorithm: 'HS256', expiresIn: '1h' } )
+                token: createToken(tokenData)
             };
             reply(res).code(201);
         }
@@ -127,7 +128,7 @@ module.exports = [
                             scope: [user.scope],
                             id: user._id
                         };
-                        Common.sentMailVerificationLink(user,Jwt.sign(tokenData, privateKey,{ algorithm: 'HS256', expiresIn: '1h' } ));
+                        Common.sentMailVerificationLink(user,createToken(tokenData));
                         reply({message:'account verification link is sucessfully send to an email id'});
                     }else{
                         reply(Boom.forbidden('invalid username or password'));
@@ -174,14 +175,15 @@ module.exports = [
         path: '/verifyEmail/{token}',
         handler: function(request, reply){
             Jwt.verify(request.params.token, privateKey, function(error, decoded){
+                decoded = decyptToken(decoded);
                 if(decoded === undefined){
                     reply(Boom.forbidden('invalid verification link'));
                     return;
                 }
-                if(decoded.scope[0] != 'User'){
-                    reply(Boom.forbidden('invalid verification link'));
-                    return;
-                }
+                // if(decoded.scope[0] != 'User'){
+                //     reply(Boom.forbidden('invalid verification link'));
+                //     return;
+                // }
                 User.findOne({
                     username: decoded.username,
                     _id: decoded.id
