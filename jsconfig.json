@@ -12,6 +12,6 @@
 		"jspm_packages",
 		"tmp",
 		"temp",
-        "test"
+		"test"
 	]
 }

@@ -11,7 +11,7 @@
     "rules": {
         "indent": [
             "warn",
-            4
+            2
         ],
         "linebreak-style": [
             "warn",
@@ -21,10 +21,7 @@
             "warn",
             "single"
         ],
-        "semi": [
-            "warn",
-            "always"
-        ],
+        
         "no-console": "off",
         "no-warning-comments": [1, { "terms": ["todo", "fixme", "xxx"], "location": "start" }]
     }
