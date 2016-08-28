@@ -134,7 +134,7 @@ server.start((err) => {
     * DONE : check return reply(boom) vs throw boom vs reply boom on server/routes/users
     * DONE : Encrypt JWT payload
     * TODO : can the jwt as a whole can be encrypted too?
-    * TODO : check mongo objectid vs secuential id 
+    * DONE : check mongo objectid vs secuential id 
     * TODO : fix the error handler onPreResponse has some issues with sending errors on api
     * TODO : separate normal server and api server, with this is easy to separate error representation
     * TODO : JWT can be issued for 30 days to access the api, that means payment authentication method solved
