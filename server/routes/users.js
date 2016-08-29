@@ -181,10 +181,10 @@ module.exports = [
           reply(Boom.forbidden('invalid verification link'))
           return
         }
-        // if(decoded.scope[0] != 'User'){
-        //     reply(Boom.forbidden('invalid verification link'))
-        //     return
-        // }
+        if(decoded.scope[0] != 'User'){
+          reply(Boom.forbidden('invalid verification link'))
+          return
+        }
         User.findOne({
           username: decoded.username,
           _id: decoded.id

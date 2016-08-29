@@ -214,8 +214,9 @@ module.exports = [
         .findById(request.params.id)
         .then(function (person) {
           if (!person) {
-            reply(Boom.notFound('Person id=(' + request.params.id + ') not found!'))
-            return
+            // reply(Boom.notFound('Person id=(' + request.params.id + ') not found!'))
+            throw Boom.notFound('Person id=(' + request.params.id + ') not found!')
+            // return
           }
           // We don't need to check for the existence of the query parameters.
           // The query builder methods do nothing if one of the values is undefined.
@@ -228,8 +229,13 @@ module.exports = [
           reply(pets)
         })
         .catch(function (error) {
+          // request.headers.accept = 'application/json'
+          if (error.isBoom) {
+            reply(error)
+            return
+          }
           reply(Boom.badImplementation(error))
-          return
+          // return
         })
     }
   },

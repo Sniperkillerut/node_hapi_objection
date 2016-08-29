@@ -1,6 +1,7 @@
 'use strict'
 
 const mongoose = require('mongoose')
+//TODO: I dont know if I should be calling the module or the user-db.Mongoose, this of combining 60 guides in one can get confusing at times
 const Schema = mongoose.Schema
 // const autoIncrement = require('mongoose-auto-increment')
 // const db = require('../../config/user-db').db
