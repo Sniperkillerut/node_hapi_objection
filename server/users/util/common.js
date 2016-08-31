@@ -64,6 +64,6 @@ function mail (from, email, subject, mailbody) {
       console.error(error)
       throw error
     }
-    nodemailerMailgun.close(); // shut down the connection pool, no more messages
+    nodemailerMailgun.close() // shut down the connection pool, no more messages
   })
 }

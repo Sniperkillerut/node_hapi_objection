@@ -1,25 +1,24 @@
 'use strict'
 
+const Boom        = require('boom')
+const Joi         = require('joi')
 const transaction = require('objection').transaction
-const Person = require('../models/Person')
-const Movie = require('../models/Movie')
-const Boom = require('boom')
-const Joi = require('joi')
+const Person      = require('../models/Person')
+const Movie       = require('../models/Movie')
 
 module.exports = [
   {
     config: {
       payload: {
         output: 'data',
-        parse: true
+        parse: true,
+        allow: 'application/json'
+        //maxBytes - limits the size of incoming payloads to the specified byte count. Allowing very large payloads may cause the server to run out of memory. Defaults to 1048576 (1MB).
+        //uploads - the directory used for writing file uploads. Defaults to os.tmpDir().
       },
-    // this is for hapi lout  
-    // description: 'Say hello!',
-    // notes: 'The user parameter defaults to \'stranger\' if unspecified',
-    // tags: ['api', 'greeting']
     },
     method: 'POST',
-    path: '/persons',
+    path: '/api/persons',
     handler: function (request, reply) {
       Person
         .query()
@@ -29,7 +28,6 @@ module.exports = [
         })
         .catch(function (error) {
           reply(Boom.badImplementation(error))
-          return
         })
     }
   },
@@ -51,7 +49,6 @@ module.exports = [
         })
         .catch(function (error) {
           reply(Boom.badImplementation(error))
-          return
         })
     }
   },
@@ -95,7 +92,6 @@ module.exports = [
         })
         .catch(function (error) {
           reply(Boom.badImplementation(error))
-          return
         })
     }
   },
@@ -122,7 +118,6 @@ module.exports = [
         })
         .catch(function (error) {
           reply(Boom.badImplementation(error))
-          return
         })
     }
   },
@@ -146,8 +141,7 @@ module.exports = [
         .findById(request.params.id)
         .then(function (person) {
           if (!person) {
-            reply(Boom.notFound('Person id=(' + request.params.id + ') not found!'))
-            return
+            throw Boom.notFound('Person id=(' + request.params.id + ') not found!')
           }
           return person
             .$relatedQuery('children')
@@ -157,8 +151,11 @@ module.exports = [
           reply(child)
         })
         .catch(function (error) {
+          if (error.isBoom) {
+            reply(error)
+            return
+          }
           reply(Boom.badImplementation(error))
-          return
         })
     }
   },
@@ -182,8 +179,7 @@ module.exports = [
         .findById(request.params.id)
         .then(function (person) {
           if (!person) {
-            reply(Boom.notFound('Person id=(' + request.params.id + ') not found!'))
-            return
+            throw Boom.notFound('Person id=(' + request.params.id + ') not found!')
           }
           return person
             .$relatedQuery('pets')
@@ -193,8 +189,11 @@ module.exports = [
           reply(pet)
         })
         .catch(function (error) {
+          if (error.isBoom) {
+            reply(error)
+            return
+          }
           reply(Boom.badImplementation(error))
-          return
         })
     }
   },
@@ -214,9 +213,7 @@ module.exports = [
         .findById(request.params.id)
         .then(function (person) {
           if (!person) {
-            // reply(Boom.notFound('Person id=(' + request.params.id + ') not found!'))
             throw Boom.notFound('Person id=(' + request.params.id + ') not found!')
-            // return
           }
           // We don't need to check for the existence of the query parameters.
           // The query builder methods do nothing if one of the values is undefined.
@@ -229,13 +226,11 @@ module.exports = [
           reply(pets)
         })
         .catch(function (error) {
-          // request.headers.accept = 'application/json'
           if (error.isBoom) {
             reply(error)
             return
           }
           reply(Boom.badImplementation(error))
-          // return
         })
     }
   },
@@ -262,8 +257,7 @@ module.exports = [
           .findById(request.params.id)
           .then(function (person) {
             if (!person) {
-              reply(Boom.notFound('Person id=(' + request.params.id + ') not found!'))
-              return
+              throw Boom.notFound('Person id=(' + request.params.id + ') not found!')
             }
             return person
               .$relatedQuery('movies')
@@ -274,8 +268,11 @@ module.exports = [
           reply(movie)
         })
         .catch(function (error) {
+          if (error.isBoom) {
+            reply(error)
+            return
+          }
           reply(Boom.badImplementation(error))
-          return
         })
     }
   },
@@ -299,8 +296,7 @@ module.exports = [
         .findById(request.params.id)
         .then(function (movie) {
           if (!movie) {
-            reply(Boom.notFound('Movie id=(' + request.params.id + ') not found!'))
-            return
+            throw Boom.notFound('Movie id=(' + request.params.id + ') not found!')
           }
           return movie
             .$relatedQuery('actors')
@@ -310,8 +306,11 @@ module.exports = [
           reply(request.payload)
         })
         .catch(function (error) {
+          if (error.isBoom) {
+            reply(error)
+            return
+          }
           reply(Boom.badImplementation(error))
-          return
         })
     }
   },
@@ -331,8 +330,7 @@ module.exports = [
         .findById(request.params.id)
         .then(function (movie) {
           if (!movie) {
-            reply(Boom.notFound('Movie id=(' + request.params.id + ') not found!'))
-            return
+            throw Boom.notFound('Movie id=(' + request.params.id + ') not found!')
           }
           return movie.$relatedQuery('actors')
         })
@@ -340,8 +338,11 @@ module.exports = [
           reply(actors)
         })
         .catch(function (error) {
+          if (error.isBoom) {
+            reply(error)
+            return
+          }
           reply(Boom.badImplementation(error))
-          return
         })
     }
   }

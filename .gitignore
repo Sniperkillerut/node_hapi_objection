@@ -1,6 +1,6 @@
 # Created by https://www.gitignore.io/api/node
 auth.js
-
+.vscode
 ### Node ###
 # Logs
 logs

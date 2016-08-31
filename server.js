@@ -1,16 +1,16 @@
 'use strict'
 
-const Hapi = require('hapi')
-// const Boom = require('boom')
-const Path = require('path')
-// const Good = require('good')
+const Hapi       = require('hapi')
+// const Boom    = require('boom')
 // const Promise = require('bluebird')
-const auth = require('./server/config/auth')
-const Knex = require('knex')
-const Model = require('objection').Model
-require('./server/config/user-db').db // without this the db is never connected and can be called from any module
-const knex = Knex(auth.development)
+const Path       = require('path')
+const auth       = require('./server/config/auth')
+const Pack       = require('./package')
+const Knex       = require('knex')
+const Model      = require('objection').Model
+const knex       = Knex(auth.development)
 Model.knex(knex)
+require('./server/config/user-db').db // without this the db is never connected (can be called from any module)
 const server = new Hapi.Server({
   debug: {
     request: ['error']
@@ -67,16 +67,85 @@ const options = {
     ]
   }
 }
+const swagger_options = {
+  basePath: '/',
+  // pathPrefixSize: 2,
+  // swaggerUI : false,
+  // documentationPage : false,
+  // swaggerUIPath: '/ui/',
+  info: {
+    title: 'Test API Documentation',
+    version: Pack.version,
+    description: 'This web API was built to demonstrate some of the hapi features and functionality.',
+    termsOfService: 'https://github.com/glennjones/hapi-swagger/',
+    contact: {
+      name: 'test name',
+      url: 'https://raw.githubusercontent.com/glennjones/hapi-swagger/master/license.txt',
+      email: 'glennjonesnet@gmail.com'
+    },
+    license: {
+      name: 'MIT',
+      url: 'https://raw.githubusercontent.com/glennjones/hapi-swagger/master/license.txt'
+    }
+  },
+  tags: [
+    {
+      name: 'api',
+      description: 'API calls'
+    }, {
+      name: 'users',
+      description: 'Users account management'
+    }, {
+      name: 'store',
+      description: 'Storing a sum',
+      externalDocs: {
+        description: 'Find out more about storage',
+        url: 'http://example.org'
+      }
+    }, {
+      name: 'sum',
+      description: 'API of sums',
+      externalDocs: {
+        description: 'Find out more about sums',
+        url: 'http://example.org'
+      }
+    }
+  ],
+  jsonEditor: true,
+  securityDefinitions: {
+    jwt: {
+      type: 'apiKey',
+      name: 'Authorization',
+      in: 'header'
+    }
+  },
+  security: [{ 'jwt': [] }],
+  // auth: 'jwt' // must register the auth strategy before using it in swagger
+}
 
 server.register(
   [
-    require('hapi-auth-cookie'),
     require('hapi-auth-jwt2'),
+  ],
+  function (err) {
+    if (err) {
+      throw err // handle plugin startup error
+    }
+  }
+)
+server.auth.strategy.apply(null, auth.jws) // jws
+// must register the auth strategy before using it in swagger
+server.register(
+  [
+    require('hapi-auth-cookie'),
     require('bell'),
     require('hapi-postgres-connection'),
     require('vision'),
     require('inert'),
-    {register: require('good'), options}
+    { register: require('good'), options},
+    { register: require('hapi-swagger'), options: swagger_options },
+    { register: require('blipp'), options: { showAuth: true } },
+    { register: require('hapijs-status-monitor')}
   ],
   function (err) {
     if (err) {
@@ -86,10 +155,9 @@ server.register(
 )
 
 // Setup the session strategy
-server.auth.strategy.apply(null, auth.session) // coockies session
-server.auth.strategy.apply(null, auth.twitter) // twitter
+server.auth.strategy.apply(null, auth.session)  // coockies session
+server.auth.strategy.apply(null, auth.twitter)  // twitter
 server.auth.strategy.apply(null, auth.linkedin) // linkedin
-server.auth.strategy.apply(null, auth.jws) // jws
 
 server.views({
   engines: { html: require('hapi-dust') },
@@ -104,18 +172,20 @@ server.route(routes)
 
 server.ext('onPreResponse', (request, reply) => {
   if (request.response.isBoom) {
-    if (request.headers.accept.indexOf('application/json') === -1) {
-      const err = request.response
-      const errName = err.output.payload.error
-      const statusCode = err.output.payload.statusCode
-      if (statusCode === 401) {
-        // TODO: redirect to login
-        return reply.redirect('/t')
+    if (request.headers.accept) {
+      if (request.headers.accept.indexOf('application/json') === -1) {
+        const err = request.response
+        const errName = err.output.payload.error
+        const statusCode = err.output.payload.statusCode
+        if (statusCode === 401) {
+          // TODO: redirect to login
+          return reply.redirect('/t')
+        }
+        return reply.view('error', {
+          statusCode: statusCode,
+          errName: errName
+        }).code(statusCode)
       }
-      return reply.view('error', {
-        statusCode: statusCode,
-        errName: errName
-      }).code(statusCode)
     }
   }
   reply.continue()
@@ -137,15 +207,18 @@ server.start((err) => {
 */
 // DONE: check return reply(boom) vs throw boom vs reply boom on server/routes/users
 // DONE: Encrypt JWT payload
-// TODO: can the jwt as a whole can be encrypted too?
 // DONE: check mongo objectid vs secuential id 
 // DONE: fix the error handler onPreResponse has some issues with sending errors on api
+// DONE: use swaggered for pretty api https://www.npmjs.com/package/hapi-swaggered or LOUT https://github.com/hapijs/lout
+// DONE: fix api route reply boom to throw boom and catch to if.... reply, /persons/id/pet has an example
+// DONE: add example, dafault and label to all schemas
+// TODO: create more validation schemas
+// TODO: can the jwt as a whole can be encrypted too?
 // TODO: separate normal server and api server, with this is easy to separate error representation (no longer necessary but may aswell help organize the server)
 // NOTE: JWT can be issued for 30 days to access the api, that means payment authentication method solved
-// TODO: add JWT token to user document in mongodb
-// https://stormpath.com/blog/where-to-store-your-jwts-cookies-vs-html5-web-storage
+// TODO: add JWT token to user document in mongodb for revocation pruposes
+// NOTE: https://stormpath.com/blog/where-to-store-your-jwts-cookies-vs-html5-web-storage
 // TODO: make login with linkedin, fb, twitter, etc.
 // TODO: add tests, AVA looks good
 // TODO: add comments, lots of comments
 // TODO: add cache with redis catbox https://github.com/hapijs/catbox
-// TODO: use swaggered for pretty api https://www.npmjs.com/package/hapi-swaggered or LOUT https://github.com/hapijs/lout
