@@ -111,7 +111,7 @@ const swagger_options = {
       }
     }
   ],
-  jsonEditor: true,
+  // jsonEditor: true,
   securityDefinitions: {
     jwt: {
       type: 'apiKey',

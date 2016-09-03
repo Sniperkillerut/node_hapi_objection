@@ -13,7 +13,7 @@ const updateUserSchema       = require('../users/schemas/updateUser')
 const authenticateUserSchema = require('../users/schemas/authenticateUser')
 const createUserSchema       = require('../users/schemas/createUser')
 const checkUserSchema        = require('../users/schemas/checkUser')
-const forgotPasswordSchema   =  require('../users/schemas/forgotpassword.js')
+const forgotPasswordSchema   = require('../users/schemas/forgotpassword.js')
 // had some errors with bcrypt on windows
 // function hashPassword(password, cb){
 //   // Generate a salt at level 10 strength
@@ -376,13 +376,6 @@ module.exports = [
   },
   {
     config: {
-      payload: {
-        output: 'data',
-        parse: true,
-        allow: 'application/json'
-        //maxBytes - limits the size of incoming payloads to the specified byte count. Allowing very large payloads may cause the server to run out of memory. Defaults to 1048576 (1MB).
-        //uploads - the directory used for writing file uploads. Defaults to os.tmpDir().
-      },
       auth: false,
       validate: {
         params: Joi.object({ token: Joi.string().required().description('JWT').default('hbGciOiJIUzI1NiIsInR5cCI6kpVCJ9eyJoYXNoIjoiNGI4OZiZDZlMzM5YTcyMJOWIxZjhjMzM0ODIxNzI1OGZOD1N2FmN2Y3MzQxMzgzYjEyMzYzNNjZjNDBlNDNmZmQ2YmY4NTZhZjY2OTBjMmU1MWI1N2YyIiwiaWF0IjocyNTk2NTE3LCJleHAOjE0NzI2MDxMTd9HL7yOlzW4KJz5qMhMs9lKAlOyavRXdlk6uXQ')}).label('JWT')
@@ -540,7 +533,7 @@ module.exports = [
               }).label('internal server error')
             }
           },
-          payloadType: 'form',
+          payloadType: 'json',
           security: [{ 'jwt': [] }]
         }
       }
@@ -574,13 +567,6 @@ module.exports = [
   },
   {
     config: {
-      payload: {
-        output: 'data',
-        parse: true,
-        allow: 'application/json'
-        //maxBytes - limits the size of incoming payloads to the specified byte count. Allowing very large payloads may cause the server to run out of memory. Defaults to 1048576 (1MB).
-        //uploads - the directory used for writing file uploads. Defaults to os.tmpDir().
-      },
       auth: {
         // Add authentication to this route
         // The user must have a scope of `admin`
@@ -640,7 +626,7 @@ module.exports = [
               }).label('internal server error')
             }
           },
-          payloadType: 'form',
+          payloadType: 'json',
           security: [{ 'jwt': [] }]
         }
       }
