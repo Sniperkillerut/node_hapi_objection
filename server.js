@@ -5,12 +5,14 @@ const Hapi       = require('hapi')
 // const Promise = require('bluebird')
 const Path       = require('path')
 const auth       = require('./server/config/auth')
-const Pack       = require('./package')
 const Knex       = require('knex')
 const Model      = require('objection').Model
 const knex       = Knex(auth.development)
 Model.knex(knex)
 require('./server/users/user-db').db // without this the db is never connected (can be called from any module)
+const goodOptions = require('./server/config/goodOptions')
+const swagger_options = require('./server/config/swaggerOptions')
+
 const server = new Hapi.Server({
   debug: {
     request: ['error']
@@ -28,100 +30,6 @@ server.connection({
   host: auth.server.host
 })
 
-const options = {
-  ops: {
-    interval: 1000
-  },
-  reporters: {
-    myConsoleReporter: [{
-      module: 'good-squeeze',
-      name: 'Squeeze',
-      args: [{ log: '*', response: '*' }]
-    }, {
-      module: 'good-console'
-    }, 'stdout'],
-    myFileReporter: [{
-      module: 'good-squeeze',
-      name: 'Squeeze',
-      args: [{ ops: '*' }]
-    }, {
-      module: 'good-squeeze',
-      name: 'SafeJson'
-    }, {
-      module: 'good-file',
-      args: ['./test/fixtures/awesome_log']
-    }],
-    myHTTPReporter: [{
-      module: 'good-squeeze',
-      name: 'Squeeze',
-      args: [{ error: '*' }]
-    }
-    // , {
-    //     module: 'good-http',
-    //     args: ['http://prod.logs:3000', {
-    //         wreck: {
-    //             headers: { 'x-api-key': 12345 }
-    //         }
-    //     }]
-    // }
-    ]
-  }
-}
-const swagger_options = {
-  basePath: '/',
-  // pathPrefixSize: 2,
-  // swaggerUI : false,
-  // documentationPage : false,
-  // swaggerUIPath: '/ui/',
-  info: {
-    title: 'Test API Documentation',
-    version: Pack.version,
-    description: 'This web API was built to demonstrate some of the hapi features and functionality.',
-    termsOfService: 'https://github.com/glennjones/hapi-swagger/',
-    contact: {
-      name: 'test name',
-      url: 'https://raw.githubusercontent.com/glennjones/hapi-swagger/master/license.txt',
-      email: 'glennjonesnet@gmail.com'
-    },
-    license: {
-      name: 'MIT',
-      url: 'https://raw.githubusercontent.com/glennjones/hapi-swagger/master/license.txt'
-    }
-  },
-  tags: [
-    {
-      name: 'api',
-      description: 'API calls'
-    }, {
-      name: 'users',
-      description: 'Users account management'
-    }, {
-      name: 'store',
-      description: 'Storing a sum',
-      externalDocs: {
-        description: 'Find out more about storage',
-        url: 'http://example.org'
-      }
-    }, {
-      name: 'sum',
-      description: 'API of sums',
-      externalDocs: {
-        description: 'Find out more about sums',
-        url: 'http://example.org'
-      }
-    }
-  ],
-  // jsonEditor: true,
-  securityDefinitions: {
-    jwt: {
-      type: 'apiKey',
-      name: 'Authorization',
-      in: 'header'
-    }
-  },
-  security: [{ 'jwt': [] }],
-  // auth: 'jwt' // must register the auth strategy before using it in swagger
-}
 
 server.register(
   [
@@ -142,7 +50,7 @@ server.register(
     require('hapi-postgres-connection'),
     require('vision'),
     require('inert'),
-    { register: require('good'), options},
+    { register: require('good'), goodOptions},
     { register: require('hapi-swagger'), options: swagger_options },
     { register: require('blipp'), options: { showAuth: true } },
     { register: require('hapijs-status-monitor')}
