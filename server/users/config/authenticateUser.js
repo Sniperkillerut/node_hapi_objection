@@ -3,7 +3,7 @@
 const Joi                    = require('joi')
 const authenticateUserSchema = require('../schemas/authenticateUser')
 const verifyCredentials      = require('../util/userFunctions').verifyCredentials
-const errors                 = require('./errors')
+const errors                 = require('../../config/errors')
 
 module.exports = {
   payload: {

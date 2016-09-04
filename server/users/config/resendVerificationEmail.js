@@ -1,8 +1,8 @@
 'use strict'
 
-const Joi = require('joi')
+const Joi                    = require('joi')
 const authenticateUserSchema = require('../schemas/authenticateUser')
-const errors = require('./errors')
+const errors                 = require('../../config/errors')
 
 module.exports = {
   payload: {

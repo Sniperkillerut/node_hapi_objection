@@ -3,7 +3,7 @@
 const Joi              = require('joi')
 const verifyUniqueUser = require('../util/userFunctions').verifyUniqueUser
 const createUserSchema = require('../schemas/createUser')
-const errors           = require('./errors')
+const errors           = require('../../config/errors')
 
 module.exports = {
   payload: {

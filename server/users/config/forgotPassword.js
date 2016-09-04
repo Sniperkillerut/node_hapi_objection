@@ -2,7 +2,7 @@
 
 const Joi                  = require('joi')
 const forgotPasswordSchema = require('../schemas/forgotpassword.js')
-const errors               = require('./errors')
+const errors               = require('../../config/errors')
 
 module.exports = {
   payload: {

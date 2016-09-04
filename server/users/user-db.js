@@ -1,5 +1,5 @@
 var Mongoose = require('mongoose')
-var config = require('./auth').user_db
+var config = require('../config/auth.js').user_db
 
 Mongoose.connect('mongodb://' + config.host + '/' + config.db)
 var db = Mongoose.connection

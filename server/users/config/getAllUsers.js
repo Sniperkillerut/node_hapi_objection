@@ -2,7 +2,7 @@
 
 const Joi              = require('joi')
 const updateUserSchema = require('../schemas/updateUser')
-const errors           = require('./errors')
+const errors           = require('../../config/errors')
 
 module.exports = {
   auth: {

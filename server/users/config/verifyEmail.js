@@ -1,7 +1,7 @@
 'use strict'
 
-const Joi = require('joi')
-const errors = require('./errors')
+const Joi    = require('joi')
+const errors = require('../../config/errors')
 
 module.exports = {
   auth: false,

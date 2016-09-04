@@ -10,7 +10,7 @@ const Knex       = require('knex')
 const Model      = require('objection').Model
 const knex       = Knex(auth.development)
 Model.knex(knex)
-require('./server/config/user-db').db // without this the db is never connected (can be called from any module)
+require('./server/users/user-db').db // without this the db is never connected (can be called from any module)
 const server = new Hapi.Server({
   debug: {
     request: ['error']
@@ -226,3 +226,29 @@ server.start((err) => {
 // TODO: add tests, AVA looks good
 // TODO: add comments, lots of comments
 // TODO: add cache with redis catbox https://github.com/hapijs/catbox
+/**
+ python is pretty
+ people love perl for its simplicity, but python wins here, many has jumped from perl to python
+ cython is for calling C libraries from python (and programming them)
+ pypy is an interpreter for python, run faster than normal python, even comparable with cython and some times eve faster
+ for backend node and go are faster than python
+ for front en javascript is mandatory
+ for web games javascript or flash is mandatory
+ for games c / c++ / java / c# are mandatory
+ for drivers C / c++ / fortran is mandatory
+ for multi thread and telecom (chat) enrlang is the best (whatsapp is using it among others)
+ rust aims to be the reemplacement of c++, but seems rather slow for that
+ ocalm seems to be something between python and haskell, an hybrid you will, people praise it too, but often all who learns ocaml jumps to haskell
+ for function haskell is widely used also everyone praises it after learning it, like a new mindset or something, people enjoy it
+ speed c>c++>ocaml>c#>go>java>rust>haskell>>node>>>>python
+ http://benchmarksgame.alioth.debian.org/u64q/performance.php?test=nbody
+ 
+ so aparently python is only pretty and fast to prototype, probably the fastest and most developer friendly
+  but aparently does not exels at anything else, so you would be better of learning other languages
+    unless you want to develop programs fast and dont care about optimizations
+ some people seems to hate c++ (that is why rust and go were born)
+  but aparently the hate is because there are somethings that are easier to do on any other language
+    and yes python is easy and pretty but when you want or need a fast program, there is really not much better than c++ / c thats why games are made in those languages
+
+  my decision: using python only for inhouse proyects, something easy, something fast, something not for the real world but rather for my own use pheraps there will come a day when pypy is comparable to c++ applications? even games? 
+*/
