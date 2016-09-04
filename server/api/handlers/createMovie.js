@@ -1,7 +1,7 @@
 'use strict'
 
 const Boom        = require('boom')
-const Person      = require('../api/models/Person')
+const Person      = require('../models/Person')
 const transaction = require('objection').transaction
 
 module.exports = function (request, reply) {

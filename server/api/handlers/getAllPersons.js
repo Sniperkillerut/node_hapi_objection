@@ -1,7 +1,7 @@
 'use strict'
 
 const Boom   = require('boom')
-const Person = require('../api/models/Person')
+const Person = require('../models/Person')
 
 module.exports = function (request, reply) {
   // Get all Persons. The result can be filtered using query parameters

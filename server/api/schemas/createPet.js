@@ -14,7 +14,13 @@ const response = Joi.object({
   ownerID: Joi.number()
 }).label('Pet creation schema')
 
+const getPet = Joi.object({
+  name: Joi.string().min(1).max(255).description('Pet Name').example('Fluffy'),
+  species: Joi.string().min(1).max(255).description('Pet species').example('Dog')
+}).label('Pet creation schema')
+
 module.exports = {
   validate: validate,
-  response: response
+  response: response,
+  getPet: getPet
 }

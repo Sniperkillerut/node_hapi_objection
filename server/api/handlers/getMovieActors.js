@@ -1,7 +1,7 @@
 'use strict'
 
 const Boom  = require('boom')
-const Movie = require('../api/models/Movie')
+const Movie = require('../models/Movie')
 
 module.exports = function (request, reply) {
   Movie

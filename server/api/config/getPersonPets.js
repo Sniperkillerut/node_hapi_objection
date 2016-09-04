@@ -7,7 +7,7 @@ const ids             = require('../schemas/ids')
 module.exports = {
   validate: {
     params: ids.personID,
-    query: createPetSchema.validate
+    query: createPetSchema.getPet
   },
   auth: false,
   // auth: {
