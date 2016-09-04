@@ -1,8 +1,8 @@
 'use strict'
 
 const Joi              = require('joi')
-const verifyUniqueUser = require('../users/util/userFunctions').verifyUniqueUser
-const checkUserSchema  = require('../users/schemas/checkUser')
+const verifyUniqueUser = require('../util/userFunctions').verifyUniqueUser
+const checkUserSchema  = require('../schemas/checkUser')
 const errors           = require('./errors')
 
 module.exports = {

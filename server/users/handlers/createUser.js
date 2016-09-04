@@ -5,6 +5,15 @@ const User        = require('../models/User')
 const Common      = require('../util/common')
 const createToken = require('../util/userFunctions').createToken
 
+// had some errors with bcrypt on windows
+// function hashPassword(password, cb){
+//   // Generate a salt at level 10 strength
+//   bcrypt.genSalt(10, (error, salt) => {
+//     bcrypt.hash(password, salt, (error, hash) => {
+//       return cb(error, hash)
+//     })
+//   })
+// }
 
 module.exports = function (request, reply) {
   let user = new User()

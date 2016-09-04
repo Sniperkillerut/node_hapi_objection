@@ -1,7 +1,7 @@
 'use strict'
 
 const Boom = require('boom')
-const User = require('../users/models/User')
+const User = require('../models/User')
 
 module.exports = function (request, reply) {
   User

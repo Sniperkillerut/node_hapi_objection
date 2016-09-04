@@ -2,8 +2,8 @@
 
 const Boom        = require('boom')
 const createToken = require('../util/userFunctions').createToken
-const Common      = require('../users/util/common')
-const User        = require('../users/models/User')
+const Common      = require('../util/common')
+const User        = require('../models/User')
 
 module.exports = function (request, reply) {
   const id = request.params.id

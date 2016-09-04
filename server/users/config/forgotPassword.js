@@ -1,7 +1,7 @@
 'use strict'
 
 const Joi                  = require('joi')
-const forgotPasswordSchema = require('../users/schemas/forgotpassword.js')
+const forgotPasswordSchema = require('../schemas/forgotpassword.js')
 const errors               = require('./errors')
 
 module.exports = {

@@ -3,7 +3,7 @@
 const Boom        = require('boom')
 const User        = require('../models/User')
 const Jwt         = require('jsonwebtoken')
-const decyptToken = require('../users/util/userFunctions').decyptToken
+const decyptToken = require('../util/userFunctions').decyptToken
 
 module.exports = function (request, reply) {
   let privateKey = require('../config/auth').key.privateKey
