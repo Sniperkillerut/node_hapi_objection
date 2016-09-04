@@ -212,6 +212,10 @@ server.start((err) => {
 // DONE: use swaggered for pretty api https://www.npmjs.com/package/hapi-swaggered or LOUT https://github.com/hapijs/lout
 // DONE: fix api route reply boom to throw boom and catch to if.... reply, /persons/id/pet has an example
 // DONE: add example, dafault and label to all schemas
+// DONE: documented all users routes for swagger
+// DONE: documented all api routes for swagger
+// DONE: Separated Users into smaller, more manegable files
+// DONE: created erros schemas for users
 // TODO: create more validation schemas
 // TODO: can the jwt as a whole can be encrypted too?
 // TODO: separate normal server and api server, with this is easy to separate error representation (no longer necessary but may aswell help organize the server)
