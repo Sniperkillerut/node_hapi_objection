@@ -1,7 +1,8 @@
 'use strict'
 
-const Joi = require('joi')
-const errors = require('../../config/errors')
+const errors            = require('../../config/errors')
+const createMovieSchema = require('../schemas/createMovie')
+const ids               = require('../schemas/ids')
 
 module.exports = {
   payload: {
@@ -9,12 +10,8 @@ module.exports = {
     parse: true
   },
   validate: {
-    params: {
-      id: Joi.number().integer().required()
-    },
-    payload: {
-      name: Joi.string().min(1).max(255).required().description('Movie Name').example('Rocky V')
-    }
+    params: ids.personID,
+    payload: createMovieSchema.validate
   },
   auth: false,
   // auth: {
@@ -28,10 +25,7 @@ module.exports = {
       responses: {
         '200': {
           'description': 'Movie creation schema',
-          'schema': Joi.object({
-            name: Joi.string().min(1).max(255).required().description('Movie Name').example('Rocky V'),
-            ID: Joi.number()
-          }).label('Movie creation schema')
+          'schema': createMovieSchema.response
         },
         '400': errors.e400,
         '401': errors.e401,

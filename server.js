@@ -216,7 +216,8 @@ server.start((err) => {
 // DONE: documented all api routes for swagger
 // DONE: Separated Users into smaller, more manegable files
 // DONE: created erros schemas for users
-// TODO: create more validation schemas
+// DONE: separated api routes into config and handlers
+// DONE: create more validation schemas
 // TODO: can the jwt as a whole can be encrypted too?
 // TODO: separate normal server and api server, with this is easy to separate error representation (no longer necessary but may aswell help organize the server)
 // NOTE: JWT can be issued for 30 days to access the api, that means payment authentication method solved

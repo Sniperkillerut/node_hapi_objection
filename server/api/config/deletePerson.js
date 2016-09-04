@@ -1,7 +1,7 @@
 'use strict'
 
-const Joi = require('joi')
 const errors = require('../../config/errors')
+const ids    = require('../schemas/ids')
 
 module.exports = {
   payload: {
@@ -9,9 +9,7 @@ module.exports = {
     parse: true
   },
   validate: {
-    params: {
-      id: Joi.number().integer().required()
-    }
+    params: ids.personID
   },
   auth: false,
   // auth: {
@@ -25,8 +23,7 @@ module.exports = {
       responses: {
         '200': {
           'description': 'Person deleted',
-          'schema': Joi.object({
-          }).label('Person deletion schema')
+          'schema': {}
         },
         '400': errors.e400,
         '401': errors.e401,

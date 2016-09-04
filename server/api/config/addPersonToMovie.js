@@ -1,7 +1,7 @@
 'use strict'
 
-const Joi = require('joi')
 const errors = require('../../config/errors')
+const ids    = require('../schemas/ids')
 
 module.exports = {
   payload: {
@@ -9,12 +9,8 @@ module.exports = {
     parse: true
   },
   validate: {
-    params: {
-      id: Joi.number().integer().required().description('Movie ID')
-    },
-    payload: {
-      id: Joi.number().integer().required().description('Person ID')
-    }
+    params: ids.movieID,
+    payload: ids.personID
   },
   auth: false,
   // auth: {
@@ -28,9 +24,7 @@ module.exports = {
       responses: {
         '200': {
           'description': 'Person added to movie',
-          'schema': Joi.object({
-            id: Joi.number().integer().required().description('Person ID')
-          }).label('Person add to movie schema')
+          'schema': ids.personID
         },
         '400': errors.e400,
         '401': errors.e401,

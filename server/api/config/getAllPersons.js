@@ -1,16 +1,11 @@
 'use strict'
 
-const Joi = require('joi')
-const errors = require('../../config/errors')
+const errors             = require('../../config/errors')
+const createPersonSchema = require('../schemas/createPerson')
 
 module.exports = {
   validate: {
-    query: {
-      minAge: Joi.number().integer(),
-      maxAge: Joi.number().integer(),
-      firstName: Joi.string().alphanum(),
-      eager: Joi.string()
-    }
+    query: createPersonSchema.get
   },
   auth: false,
   // auth: {
@@ -24,23 +19,12 @@ module.exports = {
       responses: {
         '200': {
           'description': 'Person ',
-          'schema': Joi.object({
-            firstName: Joi.string().min(1).max(255).required().description('Person first Name').example('Jennifer'),
-            lastName: Joi.string().min(1).max(255).required().description('Person first Name').example('Lawrence'),
-            age: Joi.number(),
-            parentID: Joi.number(),
-            ID: Joi.number(),
-            address: Joi.object({
-              street: Joi.string(),
-              city: Joi.string(),
-              zipCode: Joi.string()
-            })
-          }).label('Person schema')
+          'schema': createPersonSchema.response
         },
         '400': errors.e400,
         '401': errors.e401,
         // Should send a 404?, or with the [] is alright?
-        '500': errors.e500 
+        '500': errors.e500
       },
       payloadType: 'json',
     // security: [{ 'jwt': [] }]

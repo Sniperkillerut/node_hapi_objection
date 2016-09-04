@@ -1,13 +1,12 @@
 'use strict'
 
-const Joi = require('joi')
-const errors = require('../../config/errors')
+const errors             = require('../../config/errors')
+const ids                = require('../schemas/ids')
+const createPersonSchema = require('../schemas/createPerson')
 
 module.exports = {
   validate: {
-    params: {
-      id: Joi.number().integer().required()
-    }
+    params: ids.movieID
   },
   auth: false,
   // auth: {
@@ -21,18 +20,7 @@ module.exports = {
       responses: {
         '200': {
           'description': 'Get Movie actors',
-          'schema': Joi.object({
-            firstName: Joi.string().min(1).max(255).required().description('Person first Name').example('Jennifer'),
-            lastName: Joi.string().min(1).max(255).required().description('Person first Name').example('Lawrence'),
-            age: Joi.number(),
-            parentID: Joi.number(),
-            ID: Joi.number(),
-            address: Joi.object({
-              street: Joi.string(),
-              city: Joi.string(),
-              zipCode: Joi.string()
-            })
-          }).label('Get Movie actors schema')
+          'schema': createPersonSchema.response
         },
         '400': errors.e400,
         '401': errors.e401,
