@@ -83,14 +83,14 @@ function verifyCredentials (request, reply) {
 
 function createToken (tokenData) {
   let Jwt = require('jsonwebtoken')
-  let privateKey = require('../../config/auth').key.privateKey
+  let key = require('../../config/auth').key
   let a = Common.encrypt('' + tokenData.username)
   let b = Common.encrypt('' + tokenData.scope)
   let c = Common.encrypt('' + tokenData.id)
   let d = a + ';' + b + ';' + c
   let e = Common.encrypt('' + d)
   let f = { hash: e}
-  return Jwt.sign(f, privateKey, { algorithm: 'HS256', expiresIn: '1h' })
+  return Jwt.sign(f, key.privateKey, { algorithm: 'HS256', expiresIn: key.tokenExpiry })
 }
 function decyptToken (token) {
   let hash = token.hash

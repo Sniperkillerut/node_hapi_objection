@@ -126,9 +126,11 @@ server.start((err) => {
 // DONE: created erros schemas for users
 // DONE: separated api routes into config and handlers
 // DONE: create more validation schemas
-// TODO: can the jwt as a whole can be encrypted too?
-// TODO: separate normal server and api server, with this is easy to separate error representation (no longer necessary but may aswell help organize the server)
+// Discarded: separate normal server and api server, with this is easy to separate error representation (no longer necessary but may aswell help organize the server)
+// NOTE: In order to separate the server it will be necessary to activate CORS and somewhere I read thet it is insecure and not recommended for production, it will also incresease the server complexity with no real benefits
+//  Front, users and api was the idea, but in order to login from the front, it would be necessary to create a CORS to eighter login fron the frontend or to redirect to a login page on the users server since you can not link directly to other server routes
 // NOTE: JWT can be issued for 30 days to access the api, that means payment authentication method solved
+// TODO: can the jwt as a whole can be encrypted too?
 // TODO: add JWT token to user document in mongodb for revocation pruposes
 // NOTE: https://stormpath.com/blog/where-to-store-your-jwts-cookies-vs-html5-web-storage
 // TODO: make login with linkedin, fb, twitter, etc.
