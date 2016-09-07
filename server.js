@@ -137,6 +137,10 @@ server.start((err) => {
 // TODO: add tests, AVA looks good
 // TODO: add comments, lots of comments
 // TODO: add cache with redis catbox https://github.com/hapijs/catbox
+
+
+
+
 /**
  python is pretty
  people love perl for its simplicity, but python wins here, many has jumped from perl to python
@@ -153,6 +157,14 @@ server.start((err) => {
  for function haskell is widely used also everyone praises it after learning it, like a new mindset or something, people enjoy it
  speed c>c++>ocaml>c#>go>java>rust>haskell>>node>>>>python
  http://benchmarksgame.alioth.debian.org/u64q/performance.php?test=nbody
+ This thread convinced me of not using haskell, instead use python itertools
+ https://www.quora.com/Why-dont-more-programmers-use-Haskell
+ specially this comment
+ https://www.quora.com/Why-dont-more-programmers-use-Haskell/answer/Garry-Taylor-5
+ and this is a good one tooh
+ ttps://www.quora.com/Why-dont-more-programmers-use-Haskell/answer/Cooper-Nelson-1
+ but you must learn functional programming and haskell is a good option for this
+  it is really a good thing, just apply what you learn in other languages, you can use functional programming in almost any language
  
  so aparently python is only pretty and fast to prototype, probably the fastest and most developer friendly
   but aparently does not exels at anything else, so you would be better of learning other languages
@@ -161,5 +173,31 @@ server.start((err) => {
   but aparently the hate is because there are somethings that are easier to do on any other language
     and yes python is easy and pretty but when you want or need a fast program, there is really not much better than c++ / c thats why games are made in those languages
 
-  my decision: using python only for inhouse proyects, something easy, something fast, something not for the real world but rather for my own use pheraps there will come a day when pypy is comparable to c++ applications? even games? 
+  my decision: using python only for inhouse proyects, something easy, something fast,
+   something not for the real world but rather for my own use pheraps there will come a day when pypy is comparable to c++ applications? even games?
+  
+ espectacular este comment sobre que lenguaje aprender:
+ https://www.quora.com/What-are-the-best-programming-languages-to-learn-today/answers/5866052
+ segun ese articulo lo mejor es irse a codigo nativo, todo esta avanzando en la direccion de usar menos el browser y usar mas las apps en celulares, tablets, etc.
+  hasta windows 10 ya viene con apps para escritorio, las cuales permiten mas comodidad tanto para el usuario como para el developer debido a que lo nativo es mas flexible que los frontend javascript, mas rapido y mas facil de usar y hacer
+  Esto tambien permite trabajar con codigo de alto desempeño (es nativo) y usar las tecnologias web solo para api e intercomunicacion, es el internet de las cosas al fin y al cabo
+  con java, c# c++, swift, puedes hacer apps para celular y para escritorio, puedes hacer backend, puedes hacer juegos, te da mas libertad que usar "el mejor" en cada caso (js front, algo back, algo nativo, algo cross, etc.)
+  de entre estos, por mucho que deteste a java, ese es el cross platform, con desempeño parecido a c++ despues de optimizar, sirve para android y para todo menos ios
+  linkedin y facebook abandonaron sus apps en html5 y se pasaron a nativo en ios y android, da mas desempeño, simplemente no se puede comprar la diferencia
+  ejemplo, si haces un youtube, debes hacer nativas las aps por desempeño, velocidad de respuesta, customizacion, etc. no dejar abandonado la pagina con js pero 80% del trafico vendra de movil, hay que hacer que el movil funcione bien 
+  este tambien es bueno:
+  https://www.quora.com/What-are-the-best-programming-languages-to-learn-today/answer/Jonathan-Tsai
+  todos se inclinan por java, que desgracia... xD
+  un detractor de java, me convencio de no usarlo =P
+  http://disq.us/p/190fu9o
+  si java se va, queda c++, la pesadilla con quien nadie quiere tratar.... GO o Rust podran reemplazarlo para cosas generales?
+  aparentemente go esta intentando entrar a android para reemplazar a java, pero le faltan algunos cuantos años, nos quedamos con java de momento para android
+  c/c++ juegos, java android, python scripts rapidos y experimentos, js web, c# windows, go web? 
+  ok, go no sirve xD: (es rapido y todo, pero terminare en haskell para web? o en js, no esta tan mal como lo pintan, hapi ayuda a enmascarar y evitar cosas)
+  http://yager.io/programming/go.html
+  como en todo, recomiendan bastante python para web tambien, a pesar de ser mas lento que js y no tener mucho soporte para multihilos ni para websockets (usados en realtime web, juegos, chats, etc.),
+    pero eso de poder hacer una pagina en un par de horas es lo que lo vende, me llama la atencion, pero a la vez ya tengo mi "boilerplate" de js, ya con copy paste no me hace falta empesar de 0 cada vez
+  es sorprendente como recomiendan usar python para todo, para scipts, web, programas propios, creo que dropbox esta hecho en python me parecio leer, a pesar de no tener muy buen desempeño en benchmarks, como que eso de un lenguaje que es rapido de escribir es muy muy apreciado 
+  importante ver esto:
+  http://www.tiobe.com/tiobe-index//
 */
