@@ -72,7 +72,8 @@ module.exports = [
     method:  'POST',
     path:    '/api/persons/{id}/movies',
     config:  createMovieConfig,
-    handler: createMovieHandler   },
+    handler: createMovieHandler
+  },
   {
     method:  'POST',
     path:    '/api/movies/{id}/actors',

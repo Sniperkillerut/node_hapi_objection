@@ -1,13 +1,14 @@
 'use strict'
 
-const Hapi       = require('hapi')
+const Hapi = require('hapi')
+const Nes = require('nes')
 // const Boom    = require('boom')
 // const Promise = require('bluebird')
-const Path       = require('path')
-const auth       = require('./server/config/auth')
-const Knex       = require('knex')
-const Model      = require('objection').Model
-const knex       = Knex(auth.development)
+const Path = require('path')
+const auth = require('./server/config/auth')
+const Knex = require('knex')
+const Model = require('objection').Model
+const knex = Knex(auth.development)
 Model.knex(knex)
 require('./server/users/user-db').db // without this the db is never connected (can be called from any module)
 const goodOptions = require('./server/config/goodOptions')
@@ -30,10 +31,9 @@ server.connection({
   host: auth.server.host
 })
 
-
 server.register(
   [
-    require('hapi-auth-jwt2'),
+    require('hapi-auth-jwt2')
   ],
   function (err) {
     if (err) {
@@ -53,7 +53,8 @@ server.register(
     { register: require('good'), goodOptions},
     { register: require('hapi-swagger'), options: swagger_options },
     { register: require('blipp'), options: { showAuth: true } },
-    { register: require('hapijs-status-monitor')}
+    { register: require('hapijs-status-monitor') },
+    Nes
   ],
   function (err) {
     if (err) {
@@ -63,8 +64,8 @@ server.register(
 )
 
 // Setup the session strategy
-server.auth.strategy.apply(null, auth.session)  // coockies session
-server.auth.strategy.apply(null, auth.twitter)  // twitter
+server.auth.strategy.apply(null, auth.session) // coockies session
+server.auth.strategy.apply(null, auth.twitter) // twitter
 server.auth.strategy.apply(null, auth.linkedin) // linkedin
 
 server.views({
@@ -76,7 +77,54 @@ server.views({
 })
 
 const routes = require('./server/routes/')
-server.route(routes)
+
+server.subscription('/api/chatroom/{id}')
+var chatrooms = {}
+const temp = [
+  {
+    method: 'POST',
+    path: '/api/chatroom/{id*}',
+    config: {
+      id: 'chatroom',
+      handler: (request, reply) => {
+
+        const roomId = request.params.id ? request.params.id : 'general'
+        const message = { message: request.payload.message }
+        chatrooms.roomId ? chatrooms.roomId.messages.push(message) : chatrooms.roomId = {messages: [message]}
+
+        server.publish('/api/chatroom/'+roomId, message)
+        server.log('info', 'new message in: /chatroom/'+roomId+': '+message.message)
+        return reply(message)
+      },
+      description: 'Chat message handler',
+      tags: ['api']
+    }
+  },
+  {
+    method: 'GET',
+    path: '/api/chatroom/{id*}',
+    config: {
+      id: 'getChatroom',
+      handler: (request, reply) => {
+        const roomId = request.params.id ? request.params.id : 'general'
+        const chatHistory = chatrooms.roomId ? chatrooms.roomId.messages : [{messages: {message: 'You are the first here!'}}]
+        return reply(chatHistory)
+      },
+      description: 'Get chat history',
+      tags: ['api']
+    }
+  },
+  {
+    method: 'GET',
+    path: '/chat',
+    handler: (request, reply) => {
+      reply.view('chat.html')
+      // file: 'chat.html'
+    }
+  }
+]
+server.route([].concat(routes,temp))
+
 
 server.ext('onPreResponse', (request, reply) => {
   if (request.response.isBoom) {
@@ -87,7 +135,7 @@ server.ext('onPreResponse', (request, reply) => {
         const statusCode = err.output.payload.statusCode
         if (statusCode === 401) {
           // TODO: redirect to login
-          return reply.redirect('/t')
+          return reply.redirect('/login')
         }
         return reply.view('error', {
           statusCode: statusCode,
@@ -126,26 +174,24 @@ server.start((err) => {
 // DONE: created erros schemas for users
 // DONE: separated api routes into config and handlers
 // DONE: create more validation schemas
+// DONE: make login with linkedin, fb, twitter, etc.
+// DONE: Add WS (Web socket) with nes
+// TODO: can the jwt as a whole can be encrypted too?
+// TODO: add JWT token to user document in mongodb for revocation pruposes
+// TODO: add tests, AVA looks good
+// TODO: add comments, lots of comments
+// TODO: add cache with redis catbox https://github.com/hapijs/catbox
+// NOTE: https://stormpath.com/blog/where-to-store-your-jwts-cookies-vs-html5-web-storage
 // Discarded: separate normal server and api server, with this is easy to separate error representation (no longer necessary but may aswell help organize the server)
 // NOTE: In order to separate the server it will be necessary to activate CORS and somewhere I read thet it is insecure and not recommended for production, it will also incresease the server complexity with no real benefits
 //  Front, users and api was the idea, but in order to login from the front, it would be necessary to create a CORS to eighter login fron the frontend or to redirect to a login page on the users server since you can not link directly to other server routes
 // NOTE: JWT can be issued for 30 days to access the api, that means payment authentication method solved
-// TODO: can the jwt as a whole can be encrypted too?
-// TODO: add JWT token to user document in mongodb for revocation pruposes
-// NOTE: https://stormpath.com/blog/where-to-store-your-jwts-cookies-vs-html5-web-storage
-// TODO: make login with linkedin, fb, twitter, etc.
-// TODO: add tests, AVA looks good
-// TODO: add comments, lots of comments
-// TODO: add cache with redis catbox https://github.com/hapijs/catbox
-
-
-
 
 /**
  python is pretty
  people love perl for its simplicity, but python wins here, many has jumped from perl to python
  cython is for calling C libraries from python (and programming them)
- pypy is an interpreter for python, run faster than normal python, even comparable with cython and some times eve faster
+ pypy is an interpreter for python, run faster than normal python, even comparable with cython and some times even faster
  for backend node and go are faster than python
  for front en javascript is mandatory
  for web games javascript or flash is mandatory
@@ -153,16 +199,17 @@ server.start((err) => {
  for drivers C / c++ / fortran is mandatory
  for multi thread and telecom (chat) enrlang is the best (whatsapp is using it among others)
  rust aims to be the reemplacement of c++, but seems rather slow for that
- ocalm seems to be something between python and haskell, an hybrid you will, people praise it too, but often all who learns ocaml jumps to haskell
- for function haskell is widely used also everyone praises it after learning it, like a new mindset or something, people enjoy it
+ ocalm seems to be something between python and haskell, an hybrid if you will, people praise it too, but often all who learns ocaml jumps to haskell
+ for functional programming haskell is widely used also everyone praises it after learning it, like a new mindset or something, people enjoy it
+ for logic programming prolog was the mest now mercury seems to be the best, logic programming is awesome, I like it more than functional, but there are a lot of things that can not be done, logic is more for queries, SQL is a logic language
  speed c>c++>ocaml>c#>go>java>rust>haskell>>node>>>>python
  http://benchmarksgame.alioth.debian.org/u64q/performance.php?test=nbody
  This thread convinced me of not using haskell, instead use python itertools
  https://www.quora.com/Why-dont-more-programmers-use-Haskell
  specially this comment
  https://www.quora.com/Why-dont-more-programmers-use-Haskell/answer/Garry-Taylor-5
- and this is a good one tooh
- ttps://www.quora.com/Why-dont-more-programmers-use-Haskell/answer/Cooper-Nelson-1
+ and this is a good one too
+ https://www.quora.com/Why-dont-more-programmers-use-Haskell/answer/Cooper-Nelson-1
  but you must learn functional programming and haskell is a good option for this
   it is really a good thing, just apply what you learn in other languages, you can use functional programming in almost any language
  
@@ -197,7 +244,15 @@ server.start((err) => {
   http://yager.io/programming/go.html
   como en todo, recomiendan bastante python para web tambien, a pesar de ser mas lento que js y no tener mucho soporte para multihilos ni para websockets (usados en realtime web, juegos, chats, etc.),
     pero eso de poder hacer una pagina en un par de horas es lo que lo vende, me llama la atencion, pero a la vez ya tengo mi "boilerplate" de js, ya con copy paste no me hace falta empesar de 0 cada vez
-  es sorprendente como recomiendan usar python para todo, para scipts, web, programas propios, creo que dropbox esta hecho en python me parecio leer, a pesar de no tener muy buen desempeño en benchmarks, como que eso de un lenguaje que es rapido de escribir es muy muy apreciado 
+  es sorprendente como recomiendan usar python para todo, para scipts, web, programas propios, dropbox, duolingo, youtube estan hechos en python, a pesar de no tener muy buen desempeño en benchmarks,
+   como que eso de un lenguaje que es rapido de escribir es muy muy apreciado, dicen que ayuda a mejorar y cambiar rapido, con lo cual pueden cubrir mas terreno en menos tiempo y pueden competir mejor en el acelerado mundo web
   importante ver esto:
-  http://www.tiobe.com/tiobe-index//
+  http://www.tiobe.com/tiobe-index/
+  me inclino mucho por aprender python, pero JS esta dominando y aumentando su dominio, back end, front end, robots, hardware, etc.
+  python es muy buen lenguaje "de pegamento" osea, usar librerias escritas en C para desempeño y de resto hacerlo en python, con eso se tiene rapido prototipado, experimentacion, prueba y error, y luego las partes criticas pueden ser cambiadas a C puro
+   ademas de que es uno los lenguajes con mas librerias en existencia
+  la gente se queja mucho de que JS fomenta el desorden, y hace mas dificil trabajar en equipo, mientras que python lo hace mil veces mas facil, pero eso es supfluo dado que promises no es dificil de entender, solo es algo nuevo y extraño,
+   lo mismo que monads en haskell, y con esto se evita el callback hell que tanto teme la gente, y como puse mas arriba, hapi ayuda en esto con un poco mas de orden, de paso puedes usar el JS standar format, un plugin y listo, ya todo se entiende y funciona bien incluso en equipos mas grandes
+   por tanto en lo unico en que gana python vs JS es que python se puede usar en ".exes", que es por defecto mas rapido de escribir, mas facil de entender que JS y que lleva mas años de uso por lo tanto tiene mas librerias,
+   pero JS se lo esta alcansando y se lo va a pasar si ya no lo hizo, JS es mas rapido (se compila a C), y en cuanto a web, es mas multi usos, en cuanto a "exes" si gana python
 */

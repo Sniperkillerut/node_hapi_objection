@@ -1,6 +1,6 @@
 'use strict'
 
-const Pack = require('./package')
+const Pack = require('../../package')
 
 module.exports = {
   basePath: '/',
