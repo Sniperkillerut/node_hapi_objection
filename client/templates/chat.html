@@ -2,88 +2,33 @@
 <html lang="en">
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>The Hapi Chat Service</title>
-    <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      body { font: 13px 'inconsolata',menlo,consolas,monospaced; }
-      form { background: #6f6f6f; padding: 3px; position: fixed; bottom: 0; width: 100%; }
-      form input { border: 0; padding: 10px; width: 87%; margin-right: .5%; }
-      form button { width: 12%; background: #f6941e; border: none; padding: 10px; font-family: 'inconsolata',menlo,consolas,monospaced; }
-      #messages { list-style-type: none; margin: 0; padding: 0; }
-      #messages li { padding: 5px 10px; }
-      #messages li .info { color: gray; }
-      #messages li .error { color: red; }
-      #messages li img { height: 75px; }
-      #messages li:nth-child(odd) { background: #f8f8f8 }
-    </style>
   </head>
   <body>
-    <ul id="messages"></ul>
-    <form action="">
-      <input id="m" autocomplete="off" /><button>Send</button>
+    <h1>WS Route invocation with POST</h1>
+    <form>
+      <input id="m" autocomplete="off" />
+      <button onclick='wsTest(m.value)' type="button">Submit</button>
+      <button type="reset">Reset</button>
     </form>
-    <script src="/static/bundle.js"></script>
-    <script type="text/javascript">
-      function getQueryParameter(name) {
-        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"), results = regex.exec(location.search);
-        return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-      };
+    <ul id="messages"></ul>
+    <h1>WS Subscriptions</h1>
+    <form>
+      subscribe to channel /items/<input id="subscriptions" autocomplete="off" />
+      <button onclick='wsSubscribe(subscriptions.value)' type="button">Subscribe</button>
+      <button onclick='wsUnsubscribe(subscriptions.value)' type="button">Unsubscribe</button>
+      <button onclick='wsSubscriptions()' type="button">List subscriptions</button>
+      <br>
+      <input id="m2" autocomplete="off" />
+      <button onclick='wsSendtoChannel(subscriptions.value, m2.value)' type="button">Submit</button>
+      <button type="reset">Reset</button>
+    </form>
+    <h1>WS Broadcast</h1>
+    <form>
+      <input id="m3" autocomplete="off" />
+      <button onclick='wsBroadcast(m3.value)' type="button">Submit</button>
+      <button type="reset">Reset</button>
+    </form>
 
-      function addMessage (message, className = '') {
-        if (!message) { return; }
-        console.log(className, message);
-        const li = document.createElement('li');
-        li.innerHTML = '<p class="'+className+'">'+message+'</p>';
-        document.getElementById('messages').appendChild(li);
-      };
-      const roomId = getQueryParameter('id') ? getQueryParameter('id') : 'general';
-      const path = '/api/chatroom/' + roomId;
-
-      addMessage('Connecting to chat service...', 'info');
-
-      const protocol = window.location.protocol.indexOf('https') === -1 ? 'ws' : 'wss';
-      const client = new nes.Client(protocol + '://' + window.location.host);
-
-      let connected = false;
-      client.onConnect = () => {
-
-        if (connected) { return; }
-        connected = true;
-
-        let message = 'Connected to chat room: '+ roomId + '.';
-        message += roomId === 'general' ? ' If you want your own private room use a url like: <a href="/chat/?id=secret-room">/?id=secret-room</a>' : '';
-        
-        addMessage(message, 'info');
-
-        client.request(path, (err, messages) => {
-          if (err) {
-            return addMessage(err, 'error');
-          }
-
-          messages.forEach((m) => addMessage(m.message));
-        })
-      };
-      client.connect((err) => addMessage(err, 'error'));
-
-      client.subscribe(path, (msg) => addMessage(msg.message), (err) => addMessage(err, 'error'));
-
-      document.querySelector('form').onsubmit = (event) => {
-        event.preventDefault();
-
-        var message = {
-          method: 'POST',
-          path: path,
-          payload: {
-            message: document.getElementById('m').value
-          }
-        };
-        client.request(message, (err, res) => console.log(err, res));
-        document.getElementById('m').value = "";
-        return false;
-      }
-
-      
-    </script>
+    <script type="text/javascript" src="/js/main.min.js"></script>
   </body>
 </html>

@@ -23,6 +23,7 @@
         ],
         "semi": [1, "never"],
         "no-console": "off",
-        "no-warning-comments": [0, { "terms": ["todo", "fixme", "xxx"], "location": "start" }]
+        "no-warning-comments": [0, { "terms": ["todo", "fixme", "xxx"], "location": "start" }],
+        "no-unused-vars": ["warn", { "vars": "all", "args": "after-used" }]
     }
 }

@@ -1,17 +1,15 @@
 'use strict'
 
-const Hapi = require('hapi')
-const Nes = require('nes')
-// const Boom    = require('boom')
-// const Promise = require('bluebird')
-const Path = require('path')
-const auth = require('./server/config/auth')
-const Knex = require('knex')
-const Model = require('objection').Model
-const knex = Knex(auth.development)
+const Hapi            = require('hapi')
+// const Promise      = require('bluebird')
+const Path            = require('path')
+const auth            = require('./server/config/auth')
+const Knex            = require('knex')
+const Model           = require('objection').Model
+const knex            = Knex(auth.development)
 Model.knex(knex)
 require('./server/users/user-db').db // without this the db is never connected (can be called from any module)
-const goodOptions = require('./server/config/goodOptions')
+const goodOptions     = require('./server/config/goodOptions')
 const swagger_options = require('./server/config/swaggerOptions')
 
 const server = new Hapi.Server({
@@ -50,11 +48,11 @@ server.register(
     require('hapi-postgres-connection'),
     require('vision'),
     require('inert'),
+    require('nes'),
     { register: require('good'), goodOptions},
     { register: require('hapi-swagger'), options: swagger_options },
     { register: require('blipp'), options: { showAuth: true } },
     { register: require('hapijs-status-monitor') },
-    Nes
   ],
   function (err) {
     if (err) {
@@ -77,54 +75,11 @@ server.views({
 })
 
 const routes = require('./server/routes/')
+server.route(routes)
 
-server.subscription('/api/chatroom/{id}')
-var chatrooms = {}
-const temp = [
-  {
-    method: 'POST',
-    path: '/api/chatroom/{id*}',
-    config: {
-      id: 'chatroom',
-      handler: (request, reply) => {
 
-        const roomId = request.params.id ? request.params.id : 'general'
-        const message = { message: request.payload.message }
-        chatrooms.roomId ? chatrooms.roomId.messages.push(message) : chatrooms.roomId = {messages: [message]}
-
-        server.publish('/api/chatroom/'+roomId, message)
-        server.log('info', 'new message in: /chatroom/'+roomId+': '+message.message)
-        return reply(message)
-      },
-      description: 'Chat message handler',
-      tags: ['api']
-    }
-  },
-  {
-    method: 'GET',
-    path: '/api/chatroom/{id*}',
-    config: {
-      id: 'getChatroom',
-      handler: (request, reply) => {
-        const roomId = request.params.id ? request.params.id : 'general'
-        const chatHistory = chatrooms.roomId ? chatrooms.roomId.messages : [{messages: {message: 'You are the first here!'}}]
-        return reply(chatHistory)
-      },
-      description: 'Get chat history',
-      tags: ['api']
-    }
-  },
-  {
-    method: 'GET',
-    path: '/chat',
-    handler: (request, reply) => {
-      reply.view('chat.html')
-      // file: 'chat.html'
-    }
-  }
-]
-server.route([].concat(routes,temp))
-
+// WS Subscriptions
+server.subscription('/item/{id}')
 
 server.ext('onPreResponse', (request, reply) => {
   if (request.response.isBoom) {
@@ -134,7 +89,6 @@ server.ext('onPreResponse', (request, reply) => {
         const errName = err.output.payload.error
         const statusCode = err.output.payload.statusCode
         if (statusCode === 401) {
-          // TODO: redirect to login
           return reply.redirect('/login')
         }
         return reply.view('error', {
@@ -153,7 +107,13 @@ server.start((err) => {
     throw err
   }
   console.log('Server running at:', server.info.uri)
+  
 })
+
+module.exports = {
+  //exports for websockets to work
+  server: server
+} 
 
 /**
   * jwt was hard and confusing, using:

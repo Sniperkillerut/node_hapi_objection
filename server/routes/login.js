@@ -23,7 +23,7 @@ module.exports = [
     }
   },
   {
-    method: ['GET', 'POST'],
+    method: ['GET'],
     path: '/auth/linkedin',
     config: {
       auth: 'linkedin', // <-- use our linkedin strategy and let bell take over
@@ -49,7 +49,7 @@ module.exports = [
     method: 'GET',
     path: '/l',
     config: {
-      auth: 'session', // <-- require a session for this, so we have access to the twitter profile
+      auth: 'session', // <-- require a session for this, so we have access to the linkedin profile
     },
     handler: function (request, reply) {
       // Return a message using the information from the session
@@ -58,7 +58,9 @@ module.exports = [
         + '<br> with email:' + request.auth.credentials.email
         + '<br> with headline:' + request.auth.credentials.headline
         + '<br> with linkedinId:' + request.auth.credentials.linkedinId
-        + '!')
+        + '!'
+        + '<br> <a href="logout">Logout</a>'
+      )
     }
   },
   {
@@ -72,7 +74,9 @@ module.exports = [
       return reply('Hello, ' + request.auth.credentials.username
         + '<br> with displayName:' + request.auth.credentials.displayName
         + '<br> with twitterId:' + request.auth.credentials.twitterId
-        + '!')
+        + '!'
+        + '<br> <a href="logout">Logout</a>'
+      )
     }
   },
   {
