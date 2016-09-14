@@ -85,6 +85,7 @@ JWT was hard and confusing but I managed to get it working.
 
 ***
 ## Notes:
+
  *  ~~separate normal server and API server, with this is easy to separate
 error representation (no longer necessary but may aswell help organize the server)~~
     * In order to separate the server it will be necessary to activate CORS
@@ -104,8 +105,8 @@ authentication method solved
  me know, I will add your links
 
 
- ***
- ### NPM Libraries used:
+***
+### NPM Libraries used:
 
   * [bell](https://github.com/hapijs/bell)
   * [blipp](https://github.com/danielb2/blipp)
