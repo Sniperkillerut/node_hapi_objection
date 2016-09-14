@@ -52,7 +52,7 @@ JWT was hard and confusing but I managed to get it working.
  
  
 ***
- ### Little Change log:
+### Little Change log:
  
  * Check return reply(boom) vs throw boom vs reply boom on server/routes/users
    * Turns out that **return** is used like a **break**, so **return reply(...)**
