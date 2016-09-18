@@ -29,7 +29,9 @@ nothing can replace a native "real" application written in java (Android) or swi
 (IOS) read:
 
 Why LinkedIn dumped HTML5 & went native for its mobile apps
+
 Facebook doubles iPhone app speed by dumping HTML5 for native code
+
 [link to a great article about this](https://www.quora.com/What-are-the-best-programming-languages-to-learn-today/answers/5866052) 
 
 for example, I combined these two **JWT** examples:
