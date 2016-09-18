@@ -3,7 +3,35 @@ Building a boilerplate with HapiJS, Objection and lots of examples in NodeJS
 
 This is just the project in wich I am learning to use NodeJS with HapiJS reading
 a lot of documentation online and other examples even combining them into a more
-complete example
+complete example.
+
+Picking and choosing technologies and libraries can be tiresome, I already did the tedious part of comparing:
+
+* Express vs HapiJS
+* Angular vs React vs Vue vs etc.
+* Handlebars vs Jade vs Dustjs vs Mustache vs etc.
+* ORM vs no ORM
+* ObjectionJS vs Dogwetter vs Sequelize vs etc.
+* Loud vs Swagger
+* SASS vs LESS vs none [read](http://www.amberweinberg.com/why-im-still-against-sass-less/)
+* Mongodb: ObjectID vs Sequential ID
+* Gulp vs Grunt vs NPM Scripts vs Webpack
+* Browserify vs RequireJS vs CommonJS vs Webpack
+* etc.
+
+And this uses the technologies that I tought would be the best option, removing
+the burden of new learners to spend 2-3 weeks reading and trying all different
+technologies to find a comfortable one, here I don't focus on the more well known
+or the most used, I focus on the better syntax, the one that brings more options,
+the on that can be used not only on single page apps but in any kind of web app,
+I dont focus on phonegap, or react-native because if you are building a phone app
+nothing can replace a native "real" application written in java (Android) or swift
+(IOS) read:
+
+Why LinkedIn dumped HTML5 & went native for its mobile apps
+Facebook doubles iPhone app speed by dumping HTML5 for native code
+[link to a great article about this](https://www.quora.com/What-are-the-best-programming-languages-to-learn-today/answers/5866052) 
+
 for example, I combined these two **JWT** examples:
 
   * <https://github.com/auth0-blog/hapi-jwt-authentication>
